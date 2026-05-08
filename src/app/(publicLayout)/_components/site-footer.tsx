@@ -1,4 +1,4 @@
-import { Facebook, Github, Linkedin, Mail, MapPin, Phone } from "lucide-react";
+import { Code2, Mail, MapPin, Phone, Share2, Users } from "lucide-react";
 import Link from "next/link";
 
 const links = [
@@ -23,13 +23,13 @@ export function SiteFooter() {
           </p>
           <div className="mt-5 flex gap-3">
             <Link aria-label="GitHub" className="rounded-card border border-border p-2 hover:bg-muted" href="https://github.com/FahimMuntasir0417">
-              <Github className="size-4" />
+              <Code2 className="size-4" />
             </Link>
             <Link aria-label="LinkedIn" className="rounded-card border border-border p-2 hover:bg-muted" href="https://www.linkedin.com">
-              <Linkedin className="size-4" />
+              <Users className="size-4" />
             </Link>
             <Link aria-label="Facebook" className="rounded-card border border-border p-2 hover:bg-muted" href="https://www.facebook.com">
-              <Facebook className="size-4" />
+              <Share2 className="size-4" />
             </Link>
           </div>
         </div>

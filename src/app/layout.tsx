@@ -1,11 +1,12 @@
 import type { Metadata } from "next";
+import { Toaster } from "sonner";
 import { QueryProvider } from "@/providers/query-provider";
 import "./globals.css";
 
 export const metadata: Metadata = {
   title: "SkillSync AI",
   description:
-    "AI-powered learning platform for courses, assignments, reviews, dashboards, support, and career guidance.",
+    "AI-powered learning platform for career roadmaps, skill analysis, project recommendations, and AI learning assistance.",
 };
 
 export default function RootLayout({
@@ -14,9 +15,10 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" suppressHydrationWarning>
-      <body className="min-h-screen bg-background text-foreground antialiased">
+    <html lang="en">
+      <body>
         <QueryProvider>{children}</QueryProvider>
+        <Toaster richColors position="top-right" />
       </body>
     </html>
   );
