@@ -272,6 +272,7 @@ export type RoadmapPayload = {
 
 export type UpdateProfilePayload = {
   name?: string;
+  avatarUrl?: string;
   contactNumber?: string;
   address?: string;
   bio?: string;
@@ -442,6 +443,18 @@ const apiRootUrl = env.NEXT_PUBLIC_API_BASE_URL.replace(/\/api\/v1\/?$/, "");
 
 const jsonBody = (payload: unknown) => JSON.stringify(payload);
 
+const buildRootUrl = (path: string, query?: ApiListQuery) => {
+  const url = new URL(`${apiRootUrl}${path}`);
+
+  Object.entries(query ?? {}).forEach(([key, value]) => {
+    if (value !== undefined && value !== "") {
+      url.searchParams.set(key, String(value));
+    }
+  });
+
+  return url.toString();
+};
+
 export async function apiFetch<T>(
   path: string,
   { token, query, headers, skipAuthRefresh, ...options }: FetchOptions = {},
@@ -519,6 +532,12 @@ export const authApi = {
     }),
   me: () => apiFetch<AuthUser>("/auth/me"),
   usersMe: () => apiFetch<AuthUser>("/auth/users/me"),
+  users: (query?: ApiListQuery) => apiFetch<AuthUser[]>("/auth/users", { query }),
+  updateUsersMe: (payload: UpdateProfilePayload) =>
+    apiFetch<AuthUser>("/auth/users/me", {
+      method: "PATCH",
+      body: jsonBody(payload),
+    }),
   refreshToken: () =>
     apiFetch<{ accessToken: string }>("/auth/refresh-token", {
       method: "POST",
@@ -556,6 +575,8 @@ export const authApi = {
       callbackURL ? `?callbackURL=${encodeURIComponent(callbackURL)}` : ""
     }`,
   googleSuccess: () => apiFetch<null>("/auth/google/success"),
+  googleCallbackUrl: (query?: ApiListQuery) => buildRootUrl("/api/v1/auth/google/callback", query),
+  oauthErrorUrl: (error?: string) => buildRootUrl("/api/v1/auth/oauth/error", error ? { error } : undefined),
 };
 
 export const userApi = {

@@ -56,6 +56,9 @@ const date = (value?: string | null) => {
   return Number.isNaN(parsed.getTime()) ? value : parsed.toISOString().slice(0, 10);
 };
 const money = (value?: number | null) => `$${Number(value ?? 0).toFixed(2)}`;
+const showDetails = (title: string, value: unknown) => {
+  window.alert(`${title}\n\n${JSON.stringify(value, null, 2)}`);
+};
 
 const levelOptions = [
   { label: "Beginner", value: "BEGINNER" },
@@ -110,11 +113,20 @@ function useOptionData() {
     queryKey: ["dashboard-form-courses"],
     queryFn: async () => (await courseApi.list({ limit: 100 })).data,
   });
+  const instructors = useQuery({
+    queryKey: ["dashboard-form-instructors"],
+    queryFn: async () => (await userApi.list({ role: "INSTRUCTOR", limit: 100 })).data,
+  });
 
   return {
     categoryOptions:
       categories.data?.map((category) => ({ label: category.name, value: category.id })) ?? [],
     courseOptions: courses.data?.map((course) => ({ label: course.title, value: course.id })) ?? [],
+    instructorOptions:
+      instructors.data?.map((instructor) => ({
+        label: `${instructor.name} (${instructor.email})`,
+        value: instructor.id,
+      })) ?? [],
   };
 }
 
@@ -274,7 +286,10 @@ const categoryFields: DashboardField<Category>[] = [
   { name: "iconUrl", label: "Icon URL", getValue: (category) => category.iconUrl },
 ];
 
-const courseFields = (categoryOptions: { label: string; value: string }[]): DashboardField<Course>[] => [
+const courseFields = (
+  categoryOptions: { label: string; value: string }[],
+  instructorOptions: { label: string; value: string }[] = [],
+): DashboardField<Course>[] => [
   { name: "title", label: "Title", required: true, getValue: (course) => course.title },
   { name: "thumbnail", label: "Thumbnail URL", required: true, getValue: (course) => course.thumbnail },
   { name: "shortDescription", label: "Short description", required: true, type: "textarea", getValue: (course) => course.shortDescription },
@@ -285,7 +300,13 @@ const courseFields = (categoryOptions: { label: string; value: string }[]): Dash
   { name: "price", label: "Price", type: "number", getValue: (course) => course.price },
   { name: "durationInHours", label: "Duration hours", type: "number", getValue: (course) => course.durationInHours },
   { name: "previewVideoUrl", label: "Preview video URL", getValue: (course) => course.previewVideoUrl },
-  { name: "instructorId", label: "Instructor ID", getValue: (course) => course.instructorId },
+  {
+    name: "instructorId",
+    label: "Instructor",
+    type: instructorOptions.length > 0 ? "select" : "text",
+    options: instructorOptions,
+    getValue: (course) => course.instructorId,
+  },
 ];
 
 const moduleFields = (courseOptions: { label: string; value: string }[]): DashboardField<ModuleRow>[] => [
@@ -328,11 +349,18 @@ const ticketCreateFields: DashboardField<SupportTicket>[] = [
   { name: "priority", label: "Priority", type: "select", options: ticketPriorityOptions },
 ];
 
-function submissionCreateAction(assignmentId?: string): DashboardCrudAction<Submission> {
+function submissionCreateAction(assignmentOptions: { label: string; value: string }[] = [], assignmentId?: string): DashboardCrudAction<Submission> {
   return {
     label: "Submit assignment",
     fields: [
-      { name: "assignmentId", label: "Assignment ID", required: true, getValue: () => assignmentId ?? "" },
+      {
+        name: "assignmentId",
+        label: "Assignment",
+        required: true,
+        type: assignmentOptions.length > 0 ? "select" : "text",
+        options: assignmentOptions,
+        getValue: () => assignmentId ?? "",
+      },
       { name: "githubUrl", label: "GitHub URL" },
       { name: "liveUrl", label: "Live URL" },
       { name: "notes", label: "Notes", type: "textarea" },
@@ -381,13 +409,22 @@ export function CategoryManagementView() {
       createAction={{ label: "Create category", fields: categoryFields, mutation: (payload) => categoryApi.create(payload as Parameters<typeof categoryApi.create>[0]) }}
       updateAction={{ label: "Edit category", fields: categoryFields, mutation: (payload, category) => categoryApi.update(category?.id ?? "", payload) }}
       deleteAction={(category) => categoryApi.delete(category.id)}
+      rowActions={[
+        {
+          label: "Details",
+          run: async (category) => {
+            const result = await categoryApi.byId(category.id);
+            showDetails("Category details", result.data);
+          },
+        },
+      ]}
     />
   );
 }
 
 export function CoursesManagementView({ eyebrow = "Admin workspace", title = "Courses management" }: { eyebrow?: string; title?: string }) {
-  const { categoryOptions } = useOptionData();
-  const fields = courseFields(categoryOptions);
+  const { categoryOptions, instructorOptions } = useOptionData();
+  const fields = courseFields(categoryOptions, eyebrow.toLowerCase().includes("admin") ? instructorOptions : []);
   const editable = eyebrow.toLowerCase().includes("admin") || eyebrow.toLowerCase().includes("instructor");
 
   return (
@@ -405,10 +442,26 @@ export function CoursesManagementView({ eyebrow = "Admin workspace", title = "Co
       rowActions={[
         ...(editable
           ? [
+              {
+                label: "Details",
+                run: async (course: Course) => {
+                  const result = await courseApi.bySlug(course.slug);
+                  showDetails("Course details", result.data);
+                },
+              },
               { label: "Publish", run: (course: Course) => courseApi.update(course.id, { status: "PUBLISHED" }), isVisible: (course: Course) => course.status !== "PUBLISHED" },
               { label: "Archive", variant: "danger" as const, run: (course: Course) => courseApi.update(course.id, { status: "ARCHIVED" }), isVisible: (course: Course) => course.status !== "ARCHIVED" },
             ]
-          : [{ label: "Enroll", run: (course: Course) => enrollmentApi.enroll(course.id) }]),
+          : [
+              {
+                label: "Details",
+                run: async (course: Course) => {
+                  const result = await courseApi.bySlug(course.slug);
+                  showDetails("Course details", result.data);
+                },
+              },
+              { label: "Enroll", run: (course: Course) => enrollmentApi.enroll(course.id) },
+            ]),
       ]}
     />
   );
@@ -437,6 +490,13 @@ export function SupportManagementView({ eyebrow = "Common workspace", title = "S
           : undefined
       }
       rowActions={[
+        {
+          label: "Details",
+          run: async (ticket) => {
+            const result = await supportApi.ticketById(ticket.id);
+            showDetails("Support ticket details", result.data);
+          },
+        },
         {
           label: "Reply",
           run: (ticket) => {
@@ -499,10 +559,24 @@ export function AssignmentsView({ eyebrow = "Student workspace", title = "Assign
       rowActions={
         editable
           ? [
+              {
+                label: "Details",
+                run: async (assignment) => {
+                  const result = await assignmentApi.byId(assignment.id);
+                  showDetails("Assignment details", result.data);
+                },
+              },
               { label: "Close", variant: "danger", run: (assignment) => assignmentApi.update(assignment.id, { status: "CLOSED" }), isVisible: (assignment) => assignment.status !== "CLOSED" },
               { label: "Reopen", run: (assignment) => assignmentApi.update(assignment.id, { status: "ACTIVE" }), isVisible: (assignment) => assignment.status !== "ACTIVE" },
             ]
           : [
+              {
+                label: "Details",
+                run: async (assignment) => {
+                  const result = await assignmentApi.byId(assignment.id);
+                  showDetails("Assignment details", result.data);
+                },
+              },
               {
                 label: "Submit",
                 run: (assignment) => {
@@ -540,6 +614,13 @@ export function PendingSubmissionsView() {
       }}
       rowActions={[
         {
+          label: "Details",
+          run: async (submission) => {
+            const result = await submissionApi.byId(submission.id);
+            showDetails("Submission details", result.data);
+          },
+        },
+        {
           label: "Review",
           run: (submission) => {
             const feedback = window.prompt("Feedback");
@@ -553,12 +634,30 @@ export function PendingSubmissionsView() {
             });
           },
         },
+        {
+          label: "Review details",
+          isVisible: (submission) => Boolean(submission.review?.id),
+          run: async (submission) => {
+            const result = await reviewApi.submissionReviewById(submission.review?.id ?? "");
+            showDetails("Submission review details", result.data);
+          },
+        },
       ]}
     />
   );
 }
 
 export function MySubmissionsView({ eyebrow = "Common workspace", title = "My submissions" }: { eyebrow?: string; title?: string }) {
+  const assignments = useQuery({
+    queryKey: ["submission-form-assignments"],
+    queryFn: async () => (await assignmentApi.list({ limit: 100 })).data,
+  });
+  const assignmentOptions =
+    assignments.data?.map((assignment) => ({
+      label: `${assignment.title}${assignment.course?.title ? ` - ${assignment.course.title}` : ""}`,
+      value: assignment.id,
+    })) ?? [];
+
   return (
     <DashboardResourcePage
       eyebrow={eyebrow}
@@ -568,7 +667,16 @@ export function MySubmissionsView({ eyebrow = "Common workspace", title = "My su
       columns={submissionColumns}
       getRowKey={(submission) => submission.id}
       getSearchText={(submission) => `${submission.assignment?.title ?? ""} ${submission.status}`}
-      createAction={submissionCreateAction()}
+      createAction={submissionCreateAction(assignmentOptions)}
+      rowActions={[
+        {
+          label: "Details",
+          run: async (submission) => {
+            const result = await submissionApi.byId(submission.id);
+            showDetails("Submission details", result.data);
+          },
+        },
+      ]}
     />
   );
 }
@@ -588,6 +696,15 @@ export function MyClassesView({ eyebrow = "Common workspace", title = "My classe
         fields: [{ name: "progress", label: "Progress percent", required: true, type: "number", getValue: (enrollment) => enrollment.progress }],
         mutation: (payload, enrollment) => enrollmentApi.updateProgress(enrollment?.id ?? "", Number(payload.progress)),
       }}
+      rowActions={[
+        {
+          label: "Details",
+          run: async (enrollment) => {
+            const result = await enrollmentApi.byId(enrollment.id);
+            showDetails("Enrollment details", result.data);
+          },
+        },
+      ]}
     />
   );
 }

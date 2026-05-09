@@ -32,9 +32,9 @@ export const getCommonNavItems = (role: UserRole): NavSection[] => {
     {
       title: "Learning Activity",
       items: [
-        { title: "My Classes", href: "/my-classes", icon: "GraduationCap" },
+        { title: "My Enrollments", href: "/my-enrollments", icon: "GraduationCap" },
         { title: "My Submissions", href: "/my-submissions", icon: "Send" },
-        { title: "My Reviews", href: "/my-reviews", icon: "MessageSquare" },
+        { title: "Course Reviews", href: "/course-reviews", icon: "MessageSquare" },
         { title: "Support Tickets", href: "/support-tickets", icon: "Ticket" },
         { title: "Change Password", href: "/change-password", icon: "KeyRound" },
       ],
@@ -68,6 +68,7 @@ export const adminNavItems: NavSection[] = [
     items: [
       { title: "Categories", href: "/admin/dashboard/category-management", icon: "ClipboardList" },
       { title: "Courses", href: "/admin/dashboard/courses-management", icon: "BookOpen" },
+      { title: "Course Reviews", href: "/admin/dashboard/course-reviews", icon: "MessageSquare" },
       { title: "Support", href: "/admin/dashboard/support-management", icon: "Ticket" },
       { title: "AI Logs", href: "/admin/dashboard/ai-logs", icon: "Bot" },
       { title: "Blogs", href: "/admin/dashboard/blog-management", icon: "Newspaper" },
