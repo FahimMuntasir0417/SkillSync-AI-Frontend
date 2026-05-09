@@ -16,7 +16,7 @@ export function useLogin() {
   return useMutation({
     mutationFn: (payload: LoginInput) => authFeatureService.login(payload),
     onSuccess: (data) => {
-      setAuth(data.user, data.accessToken);
+      setAuth(data.user, data.accessToken, data.refreshToken);
       toast.success("Logged in successfully");
       router.push(getDefaultDashboardRoute(data.user.role));
     },

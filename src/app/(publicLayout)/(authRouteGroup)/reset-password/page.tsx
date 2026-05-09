@@ -1,7 +1,8 @@
 "use client";
 
 import { Loader2 } from "lucide-react";
-import { useState } from "react";
+import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
 import { z } from "zod";
 import { Button } from "@/components/ui/button";
 import { StatusMessage } from "@/components/ui/status";
@@ -13,10 +14,29 @@ const schema = z.object({
   newPassword: z.string().min(8, "Password must be at least 8 characters"),
 });
 
+const pendingResetEmailKey = "skillsync_pending_reset_email";
+const resetNoticeKey = "skillsync_reset_notice";
+
 export default function ResetPasswordPage() {
+  const router = useRouter();
   const [form, setForm] = useState({ email: "", otp: "", newPassword: "" });
   const [message, setMessage] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    const searchParams = new URLSearchParams(window.location.search);
+    const email = searchParams.get("email") || window.localStorage.getItem(pendingResetEmailKey) || "";
+    const notice = window.sessionStorage.getItem(resetNoticeKey);
+
+    if (email) {
+      setForm((state) => ({ ...state, email }));
+    }
+
+    if (notice) {
+      setMessage(notice);
+      window.sessionStorage.removeItem(resetNoticeKey);
+    }
+  }, []);
 
   const submit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -32,7 +52,8 @@ export default function ResetPasswordPage() {
 
     try {
       await authApi.resetPassword(parsed.data);
-      setMessage("Password reset successfully. You can now login.");
+      window.localStorage.removeItem(pendingResetEmailKey);
+      router.push("/login");
     } catch (error) {
       setMessage(error instanceof Error ? error.message : "Unable to reset password");
     } finally {
@@ -44,14 +65,13 @@ export default function ResetPasswordPage() {
     <main className="container-shell grid min-h-[calc(100vh-64px)] place-items-center py-10">
       <form className="card grid w-full max-w-md gap-4 p-6" onSubmit={submit}>
         <h1 className="text-3xl font-bold">Reset password</h1>
-        <Input label="Email" onChange={(value) => setForm((state) => ({ ...state, email: value }))} type="email" value={form.email} />
         <Input label="OTP" onChange={(value) => setForm((state) => ({ ...state, otp: value }))} value={form.otp} />
         <Input label="New password" onChange={(value) => setForm((state) => ({ ...state, newPassword: value }))} type="password" value={form.newPassword} />
         <Button disabled={loading} type="submit">
           {loading ? <Loader2 className="size-4 animate-spin" /> : null}
           Reset password
         </Button>
-        {message ? <StatusMessage message={message} title="Reset password" tone={message.includes("success") ? "success" : "danger"} /> : null}
+        {message ? <StatusMessage message={message} title="Reset password" tone={message.includes("OTP") ? "success" : "danger"} /> : null}
       </form>
     </main>
   );

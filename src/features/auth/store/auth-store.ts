@@ -12,7 +12,7 @@ type AuthState = {
   user: AuthUser | null;
   accessToken: string | null;
   role: string | null;
-  setAuth: (user: AuthUser, accessToken: string) => void;
+  setAuth: (user: AuthUser, accessToken: string, refreshToken?: string) => void;
   logout: () => void;
 };
 
@@ -33,9 +33,12 @@ export const useAuthStore = create<AuthState>((set) => ({
       ? localStorage.getItem(AUTH_STORAGE_KEYS.userRole)
       : null,
 
-  setAuth: (user, accessToken) => {
+  setAuth: (user, accessToken, refreshToken) => {
     localStorage.setItem("accessToken", accessToken);
     localStorage.setItem("skillsync_access_token", accessToken);
+    if (refreshToken) {
+      localStorage.setItem(AUTH_STORAGE_KEYS.refreshToken, refreshToken);
+    }
     if (user.role) {
       localStorage.setItem(AUTH_STORAGE_KEYS.userRole, user.role);
     }
@@ -46,6 +49,7 @@ export const useAuthStore = create<AuthState>((set) => ({
   logout: () => {
     localStorage.removeItem("accessToken");
     localStorage.removeItem("skillsync_access_token");
+    localStorage.removeItem(AUTH_STORAGE_KEYS.refreshToken);
     localStorage.removeItem(AUTH_STORAGE_KEYS.userRole);
     clearRouteGuardCookie();
     set({ user: null, accessToken: null, role: null });

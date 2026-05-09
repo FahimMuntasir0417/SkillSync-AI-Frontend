@@ -1,6 +1,7 @@
 "use client";
 
 import { Loader2 } from "lucide-react";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { z } from "zod";
 import { Button } from "@/components/ui/button";
@@ -11,7 +12,11 @@ const schema = z.object({
   email: z.string().email("Enter a valid email address"),
 });
 
+const pendingResetEmailKey = "skillsync_pending_reset_email";
+const resetNoticeKey = "skillsync_reset_notice";
+
 export default function ForgotPasswordPage() {
+  const router = useRouter();
   const [email, setEmail] = useState("");
   const [message, setMessage] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
@@ -30,7 +35,9 @@ export default function ForgotPasswordPage() {
 
     try {
       await authApi.forgetPassword(parsed.data);
-      setMessage("Password reset instructions have been sent if the account exists.");
+      window.localStorage.setItem(pendingResetEmailKey, parsed.data.email);
+      window.sessionStorage.setItem(resetNoticeKey, "Enter the OTP sent to your email and choose a new password.");
+      router.push(`/reset-password?email=${encodeURIComponent(parsed.data.email)}`);
     } catch (error) {
       setMessage(error instanceof Error ? error.message : "Unable to request password reset");
     } finally {

@@ -10,6 +10,8 @@ import { Button } from "@/components/ui/button";
 import { FormError } from "@/components/ui/form-error";
 import { Input } from "@/components/ui/input";
 import { LoadingSpinner } from "@/components/ui/loading-spinner";
+import { AUTH_STORAGE_KEYS } from "@/config/auth";
+import { getDefaultDashboardRoute } from "@/lib/authUtils";
 import { registerSchema, type RegisterInput } from "../schemas/auth.schema";
 import { useRegister } from "../hooks/use-register";
 
@@ -28,7 +30,7 @@ export function RegisterForm() {
 
   useEffect(() => {
     if (localStorage.getItem("accessToken")) {
-      router.replace("/dashboard");
+      router.replace(getDefaultDashboardRoute(localStorage.getItem(AUTH_STORAGE_KEYS.userRole)));
     }
   }, [router]);
 

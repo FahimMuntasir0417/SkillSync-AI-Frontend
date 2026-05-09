@@ -6,19 +6,30 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { useRouter } from "next/navigation";
+import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { FormError } from "@/components/ui/form-error";
 import { Input } from "@/components/ui/input";
 import { LoadingSpinner } from "@/components/ui/loading-spinner";
+import { AUTH_STORAGE_KEYS } from "@/config/auth";
+import { env } from "@/config/env";
+import { authApi } from "@/lib/api/skillsync";
+import { getDefaultDashboardRoute } from "@/lib/authUtils";
 import { loginSchema, type LoginInput } from "../schemas/auth.schema";
 import { useLogin } from "../hooks/use-login";
 
 const benefits = ["Personalized roadmap history", "Skill-gap insights", "AI project guidance"];
+const demoAccounts = [
+  { label: "Student", email: "student@skillsync.ai", password: "Student@123" },
+  { label: "Instructor", email: "instructor@skillsync.ai", password: "Instructor@123" },
+  { label: "Admin", email: "admin@skillsync.ai", password: "Admin@123" },
+];
 
 export function LoginForm() {
   const router = useRouter();
   const loginMutation = useLogin();
   const [showPassword, setShowPassword] = useState(false);
+  const googleCallbackUrl = `${env.NEXT_PUBLIC_APP_URL.replace(/\/+$/, "")}/auth/google/success`;
   const form = useForm<LoginInput>({
     resolver: zodResolver(loginSchema),
     defaultValues: {
@@ -29,13 +40,23 @@ export function LoginForm() {
 
   useEffect(() => {
     if (localStorage.getItem("accessToken")) {
-      router.replace("/dashboard");
+      router.replace(getDefaultDashboardRoute(localStorage.getItem(AUTH_STORAGE_KEYS.userRole)));
+      return;
+    }
+
+    const searchParams = new URLSearchParams(window.location.search);
+    const error = searchParams.get("error");
+
+    if (error) {
+      toast.error(error);
+      window.history.replaceState(null, "", window.location.pathname);
     }
   }, [router]);
 
-  const fillDemo = () => {
-    form.setValue("email", "student@skillsync.ai");
-    form.setValue("password", "Student@123");
+  const loginWithDemo = (email: string, password: string) => {
+    form.setValue("email", email);
+    form.setValue("password", password);
+    loginMutation.mutate({ email, password });
   };
 
   return (
@@ -84,9 +105,32 @@ export function LoginForm() {
         {loginMutation.isPending ? <LoadingSpinner /> : null}
         Sign in
       </Button>
-      <Button onClick={fillDemo} type="button" variant="outline">
-        Demo login
+      <Button asChild href={authApi.googleLoginUrl(googleCallbackUrl)} variant="outline">
+        <span className="grid size-5 place-items-center rounded-full bg-foreground text-xs font-bold text-background">G</span>
+        Continue with Google
       </Button>
+      <div className="flex items-center justify-between gap-3 text-sm">
+        <Link className="font-semibold text-primary hover:underline" href="/forgot-password">
+          Forgot password?
+        </Link>
+      </div>
+      <div className="grid gap-2">
+        <p className="text-xs font-bold uppercase tracking-[0.14em] text-muted-foreground">Demo login</p>
+        <div className="grid gap-2 sm:grid-cols-3">
+          {demoAccounts.map((account) => (
+            <Button
+              disabled={loginMutation.isPending}
+              key={account.email}
+              onClick={() => loginWithDemo(account.email, account.password)}
+              size="sm"
+              type="button"
+              variant="outline"
+            >
+              {account.label}
+            </Button>
+          ))}
+        </div>
+      </div>
       <p className="text-center text-sm text-muted-foreground">
         No account? <Link className="font-bold text-primary hover:underline" href="/register">Create one</Link>
       </p>

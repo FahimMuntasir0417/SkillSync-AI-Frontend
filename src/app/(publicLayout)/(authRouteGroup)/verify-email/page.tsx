@@ -1,7 +1,8 @@
 "use client";
 
 import { Loader2 } from "lucide-react";
-import { useState } from "react";
+import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
 import { z } from "zod";
 import { Button } from "@/components/ui/button";
 import { StatusMessage } from "@/components/ui/status";
@@ -12,10 +13,22 @@ const schema = z.object({
   otp: z.string().length(6, "OTP must be 6 characters"),
 });
 
+const pendingVerificationEmailKey = "skillsync_pending_verification_email";
+
 export default function VerifyEmailPage() {
+  const router = useRouter();
   const [form, setForm] = useState({ email: "", otp: "" });
   const [message, setMessage] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    const searchParams = new URLSearchParams(window.location.search);
+    const email = searchParams.get("email") || window.localStorage.getItem(pendingVerificationEmailKey) || "";
+
+    if (email) {
+      setForm((state) => ({ ...state, email }));
+    }
+  }, []);
 
   const submit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -31,7 +44,8 @@ export default function VerifyEmailPage() {
 
     try {
       await authApi.verifyEmail(parsed.data);
-      setMessage("Email verified successfully.");
+      window.localStorage.removeItem(pendingVerificationEmailKey);
+      router.push("/login");
     } catch (error) {
       setMessage(error instanceof Error ? error.message : "Unable to verify email");
     } finally {

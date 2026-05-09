@@ -547,8 +547,14 @@ export const authApi = {
       method: "POST",
       body: jsonBody(payload),
     }),
-  googleLoginUrl: () => `${apiRootUrl}/api/v1/auth/google`,
-  googleLoginAliasUrl: () => `${apiRootUrl}/api/v1/auth/login/google`,
+  googleLoginUrl: (callbackURL?: string) =>
+    `${apiRootUrl}/api/v1/auth/google${
+      callbackURL ? `?callbackURL=${encodeURIComponent(callbackURL)}` : ""
+    }`,
+  googleLoginAliasUrl: (callbackURL?: string) =>
+    `${apiRootUrl}/api/v1/auth/login/google${
+      callbackURL ? `?callbackURL=${encodeURIComponent(callbackURL)}` : ""
+    }`,
   googleSuccess: () => apiFetch<null>("/auth/google/success"),
 };
 
