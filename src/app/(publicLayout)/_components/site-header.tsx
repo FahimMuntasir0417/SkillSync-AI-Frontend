@@ -11,16 +11,22 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import { useEffect, useState } from "react";
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { ThemeToggle } from "./theme-toggle";
 import { AUTH_STORAGE_KEYS } from "@/config/auth";
-import { clearStoredToken, getStoredToken } from "@/lib/api/skillsync";
-import { getDefaultDashboardRoute, normalizeUserRole, type UserRole } from "@/lib/authUtils";
+import { useLogout } from "@/features/auth/hooks/use-logout";
+import { getStoredToken } from "@/lib/api/skillsync";
+import {
+  getDefaultDashboardRoute,
+  normalizeUserRole,
+  type UserRole,
+} from "@/lib/authUtils";
 
 const mainRoutes = [
   { href: "/courses", label: "Course" },
   { href: "/blogs", label: "Blog" },
-  { href: "/#ai-tools", label: "AI Tools" },
+  { href: "/ai", label: "AI Tools" },
 ];
 
 const exploreRoutes = [
@@ -37,9 +43,28 @@ function readRoleFromToken(token: string | null): UserRole | null {
 
   try {
     const base64Url = token.split(".")[1] ?? "";
-    const base64 = base64Url.replace(/-/g, "+").replace(/_/g, "/").padEnd(Math.ceil(base64Url.length / 4) * 4, "=");
+    const base64 = base64Url
+      .replace(/-/g, "+")
+      .replace(/_/g, "/")
+      .padEnd(Math.ceil(base64Url.length / 4) * 4, "=");
     const payload = JSON.parse(atob(base64)) as { role?: string };
     return normalizeUserRole(payload.role);
+  } catch {
+    return null;
+  }
+}
+
+function readEmailFromToken(token: string | null): string | null {
+  if (!token) return null;
+
+  try {
+    const base64Url = token.split(".")[1] ?? "";
+    const base64 = base64Url
+      .replace(/-/g, "+")
+      .replace(/_/g, "/")
+      .padEnd(Math.ceil(base64Url.length / 4) * 4, "=");
+    const payload = JSON.parse(atob(base64)) as { email?: string };
+    return payload.email ?? null;
   } catch {
     return null;
   }
@@ -52,27 +77,45 @@ function readStoredRole(): UserRole {
   return normalizeUserRole(readRoleFromToken(token) ?? storedRole);
 }
 
+const roleLabels: Record<UserRole, string> = {
+  ADMIN: "Admin",
+  INSTRUCTOR: "Instructor",
+  STUDENT: "Learner",
+  SUPER_ADMIN: "Super admin",
+};
+
 export function SiteHeader() {
   const [open, setOpen] = useState(false);
   const [exploreOpen, setExploreOpen] = useState(false);
   const [profileOpen, setProfileOpen] = useState(false);
   const [authenticated, setAuthenticated] = useState(false);
   const [dashboardHref, setDashboardHref] = useState("/login");
+  const [accountEmail, setAccountEmail] = useState<string | null>(null);
+  const [accountRole, setAccountRole] = useState<UserRole>("STUDENT");
+  const logoutMutation = useLogout();
 
   useEffect(() => {
     window.setTimeout(() => {
-      const hasToken = Boolean(getStoredToken());
+      const token = getStoredToken();
+      const hasToken = Boolean(token);
+      const role = readStoredRole();
 
       setAuthenticated(hasToken);
-      setDashboardHref(hasToken ? getDefaultDashboardRoute(readStoredRole()) : "/login");
+      setDashboardHref(hasToken ? getDefaultDashboardRoute(role) : "/login");
+      setAccountRole(role);
+      setAccountEmail(readEmailFromToken(token));
     }, 0);
   }, []);
 
-  const logout = () => {
-    clearStoredToken();
-    setAuthenticated(false);
-    setDashboardHref("/login");
-    window.location.href = "/";
+  const closeMenus = () => {
+    setOpen(false);
+    setExploreOpen(false);
+    setProfileOpen(false);
+  };
+
+  const handleLogout = () => {
+    closeMenus();
+    logoutMutation.mutate();
   };
 
   return (
@@ -132,6 +175,8 @@ export function SiteHeader() {
           {authenticated ? (
             <div className="relative">
               <Button
+                aria-expanded={profileOpen}
+                aria-haspopup="menu"
                 onClick={() => setProfileOpen((value) => !value)}
                 size="sm"
                 type="button"
@@ -142,22 +187,43 @@ export function SiteHeader() {
                 <ChevronDown className="size-4" />
               </Button>
               {profileOpen ? (
-                <div className="card absolute right-0 mt-2 w-56 overflow-hidden p-2">
-                  <Link className="flex items-center gap-2 rounded-card px-3 py-2 text-sm hover:bg-muted" href="/profile">
+                <div
+                  className="card absolute right-0 mt-2 w-56 overflow-hidden p-2"
+                  role="menu"
+                >
+                  <div className="mb-2 grid gap-2 rounded-card bg-primary/10 px-3 py-2 ring-1 ring-primary/15">
+                    <p className="truncate text-sm font-bold text-primary">
+                      {accountEmail ?? "Signed in"}
+                    </p>
+                    <Badge variant="primary">{roleLabels[accountRole]}</Badge>
+                  </div>
+                  <Link
+                    className="flex items-center gap-2 rounded-card px-3 py-2 text-sm hover:bg-muted"
+                    href="/profile"
+                    onClick={closeMenus}
+                    role="menuitem"
+                  >
                     <User className="size-4" />
                     Profile
                   </Link>
-                  <Link className="flex items-center gap-2 rounded-card px-3 py-2 text-sm hover:bg-muted" href={dashboardHref}>
+                  <Link
+                    className="flex items-center gap-2 rounded-card px-3 py-2 text-sm hover:bg-muted"
+                    href={dashboardHref}
+                    onClick={closeMenus}
+                    role="menuitem"
+                  >
                     <LayoutDashboard className="size-4" />
                     Dashboard
                   </Link>
                   <button
-                    className="flex w-full items-center gap-2 rounded-card px-3 py-2 text-left text-sm text-danger hover:bg-muted"
-                    onClick={logout}
+                    className="mt-2 flex w-full items-center gap-2 border-t border-border px-3 py-2 pt-3 text-left text-sm font-semibold text-danger hover:bg-muted disabled:pointer-events-none disabled:opacity-55"
+                    disabled={logoutMutation.isPending}
+                    onClick={handleLogout}
+                    role="menuitem"
                     type="button"
                   >
                     <LogOut className="size-4" />
-                    Logout
+                    {logoutMutation.isPending ? "Logging out..." : "Logout"}
                   </button>
                 </div>
               ) : null}
@@ -201,7 +267,9 @@ export function SiteHeader() {
               </Link>
             ))}
             <div className="grid gap-1 rounded-card border border-border p-2">
-              <p className="px-2 py-1 text-xs font-bold uppercase tracking-[0.14em] text-muted-foreground">Explore</p>
+              <p className="px-2 py-1 text-xs font-bold uppercase tracking-[0.14em] text-muted-foreground">
+                Explore
+              </p>
               {exploreRoutes.map((route) => (
                 <Link
                   className="rounded-card px-3 py-2 text-sm font-semibold hover:bg-muted"
@@ -221,9 +289,41 @@ export function SiteHeader() {
               Dashboard
             </Link>
             {authenticated ? (
-              <Button onClick={logout} variant="danger">
-                Logout
-              </Button>
+              <div className="grid gap-2 rounded-card border border-primary/20 bg-primary/10 p-3">
+                <div>
+                  <p className="truncate text-sm font-bold text-primary">
+                    {accountEmail ?? "Signed in"}
+                  </p>
+                  <Badge className="mt-2" variant="primary">
+                    {roleLabels[accountRole]}
+                  </Badge>
+                </div>
+                <Link
+                  className="flex items-center gap-2 rounded-card px-3 py-2 text-sm font-semibold hover:bg-muted"
+                  href="/profile"
+                  onClick={closeMenus}
+                >
+                  <User className="size-4" />
+                  Profile
+                </Link>
+                <Link
+                  className="flex items-center gap-2 rounded-card px-3 py-2 text-sm font-semibold hover:bg-muted"
+                  href={dashboardHref}
+                  onClick={closeMenus}
+                >
+                  <LayoutDashboard className="size-4" />
+                  Dashboard
+                </Link>
+                <button
+                  className="mt-1 flex w-full items-center gap-2 border-t border-primary/20 px-3 py-2 pt-3 text-left text-sm font-semibold text-danger hover:bg-muted disabled:pointer-events-none disabled:opacity-55"
+                  disabled={logoutMutation.isPending}
+                  onClick={handleLogout}
+                  type="button"
+                >
+                  <LogOut className="size-4" />
+                  {logoutMutation.isPending ? "Logging out..." : "Logout"}
+                </button>
+              </div>
             ) : (
               <div className="grid grid-cols-2 gap-2">
                 <Button asChild href="/login" variant="outline">

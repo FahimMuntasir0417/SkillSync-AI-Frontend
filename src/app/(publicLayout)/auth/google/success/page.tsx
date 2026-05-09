@@ -22,6 +22,7 @@ export default function GoogleAuthSuccessPage() {
     window.localStorage.setItem("accessToken", accessToken);
     window.localStorage.setItem(AUTH_STORAGE_KEYS.accessToken, accessToken);
     window.localStorage.setItem(AUTH_STORAGE_KEYS.userRole, role);
+    document.cookie = `skillsync_access_token=${accessToken}; path=/; max-age=604800; SameSite=Lax`;
 
     if (refreshToken) {
       window.localStorage.setItem(AUTH_STORAGE_KEYS.refreshToken, refreshToken);

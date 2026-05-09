@@ -20,7 +20,7 @@ export function RoadmapForm({ isLoading, onSubmit }: RoadmapFormProps) {
     resolver: zodResolver(roadmapSchema),
     defaultValues: {
       targetRole: "",
-      currentLevel: "",
+      currentLevel: "beginner",
       knownSkills: "",
       weeklyStudyHours: 8,
       preferredLearningStyle: "",
@@ -43,7 +43,11 @@ export function RoadmapForm({ isLoading, onSubmit }: RoadmapFormProps) {
         <div className="grid gap-4 md:grid-cols-2">
           <label className="grid gap-2">
             <span className="text-sm font-semibold">Current level</span>
-            <Input placeholder="Beginner, intermediate, advanced" {...form.register("currentLevel")} />
+            <select className="focus-ring h-12 rounded-card border border-border bg-background px-3 text-sm shadow-sm" {...form.register("currentLevel")}>
+              <option value="beginner">Beginner</option>
+              <option value="intermediate">Intermediate</option>
+              <option value="advanced">Advanced</option>
+            </select>
             <FormError message={form.formState.errors.currentLevel?.message} />
           </label>
           <label className="grid gap-2">

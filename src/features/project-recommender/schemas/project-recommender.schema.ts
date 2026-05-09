@@ -1,7 +1,9 @@
 import { z } from "zod";
 
 export const projectRecommenderSchema = z.object({
-  skillLevel: z.string().min(2, "Skill level is required"),
+  skillLevel: z.enum(["beginner", "intermediate", "advanced"], {
+    message: "Choose beginner, intermediate, or advanced",
+  }),
   targetRole: z.string().min(2, "Target role is required"),
   knownTechnologies: z.string().min(2, "Known technologies are required"),
   preferredProjectType: z.string().min(2, "Project type is required"),

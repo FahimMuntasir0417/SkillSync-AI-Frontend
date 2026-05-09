@@ -1,4 +1,5 @@
 import { apiClient } from "@/lib/api-client";
+import { toStringList } from "@/lib/utils";
 import type { ProjectRecommenderInput } from "../schemas/project-recommender.schema";
 
 export type ProjectRecommendation = {
@@ -21,7 +22,7 @@ export async function recommendProjects(payload: ProjectRecommenderInput) {
   const response = await apiClient.post<ProjectRecommendationResponse>("/ai/project-recommendations", {
     role: payload.targetRole,
     level: payload.skillLevel,
-    skills: payload.knownTechnologies,
+    skills: toStringList(payload.knownTechnologies),
     preferredProjectType: payload.preferredProjectType,
     availableTime: payload.availableTime,
   });

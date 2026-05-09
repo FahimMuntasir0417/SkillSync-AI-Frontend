@@ -1,4 +1,5 @@
 import { apiClient } from "@/lib/api-client";
+import { toStringList } from "@/lib/utils";
 import type { SkillGapInput } from "../schemas/skill-gap.schema";
 
 export type SkillGapResult = {
@@ -17,6 +18,11 @@ type SkillGapResponse = {
 };
 
 export async function analyzeSkillGap(payload: SkillGapInput) {
-  const response = await apiClient.post<SkillGapResponse>("/ai/skill-gap", payload);
+  const response = await apiClient.post<SkillGapResponse>("/ai/skill-gap", {
+    currentSkills: toStringList(payload.currentSkills),
+    targetRole: payload.targetRole,
+    experienceLevel: payload.experienceLevel,
+    preferredStack: payload.preferredStack,
+  });
   return response.data.data;
 }

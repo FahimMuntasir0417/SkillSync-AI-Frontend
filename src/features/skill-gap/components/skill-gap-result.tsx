@@ -20,6 +20,36 @@ const sections: Array<{ key: keyof SkillGapResultType; title: string }> = [
   { key: "suggestedProjects", title: "Suggested projects" },
 ];
 
+function getItemLabel(item: unknown) {
+  if (typeof item === "string") {
+    return item;
+  }
+
+  if (typeof item === "number" || typeof item === "boolean") {
+    return String(item);
+  }
+
+  if (item && typeof item === "object") {
+    const record = item as Record<string, unknown>;
+    const label =
+      record.skill ??
+      record.name ??
+      record.title ??
+      record.topic ??
+      record.step ??
+      record.description ??
+      record.recommendation;
+
+    if (typeof label === "string") {
+      return label;
+    }
+
+    return JSON.stringify(item);
+  }
+
+  return "";
+}
+
 export function SkillGapResult({ error, isLoading, result }: SkillGapResultProps) {
   if (isLoading) {
     return (
@@ -55,7 +85,9 @@ export function SkillGapResult({ error, isLoading, result }: SkillGapResultProps
       <div className="grid gap-4 md:grid-cols-2">
         {sections.map((section) => {
           const value = result[section.key];
-          const items = Array.isArray(value) ? value : [];
+          const items = Array.isArray(value)
+            ? value.map(getItemLabel).filter(Boolean)
+            : [];
 
           return (
             <section className="rounded-card border border-border p-4" key={section.title}>
@@ -68,8 +100,8 @@ export function SkillGapResult({ error, isLoading, result }: SkillGapResultProps
               </div>
               {items.length ? (
                 <div className="mt-3 flex flex-wrap gap-2">
-                  {items.map((item) => (
-                    <Badge key={item} variant={section.key === "missingSkills" ? "warning" : "primary"}>
+                  {items.map((item, index) => (
+                    <Badge key={`${section.key}-${item}-${index}`} variant={section.key === "missingSkills" ? "warning" : "primary"}>
                       {item}
                     </Badge>
                   ))}

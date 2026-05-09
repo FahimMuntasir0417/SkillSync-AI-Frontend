@@ -19,7 +19,7 @@ export function ProjectRecommenderForm({ isLoading, onSubmit }: ProjectRecommend
   const form = useForm<ProjectRecommenderInput>({
     resolver: zodResolver(projectRecommenderSchema),
     defaultValues: {
-      skillLevel: "",
+      skillLevel: "intermediate",
       targetRole: "",
       knownTechnologies: "",
       preferredProjectType: "",
@@ -37,7 +37,11 @@ export function ProjectRecommenderForm({ isLoading, onSubmit }: ProjectRecommend
         <div className="grid gap-4 md:grid-cols-2">
           <label className="grid gap-2">
             <span className="text-sm font-semibold">Skill level</span>
-            <Input placeholder="Intermediate" {...form.register("skillLevel")} />
+            <select className="focus-ring h-12 rounded-card border border-border bg-background px-3 text-sm shadow-sm" {...form.register("skillLevel")}>
+              <option value="beginner">Beginner</option>
+              <option value="intermediate">Intermediate</option>
+              <option value="advanced">Advanced</option>
+            </select>
             <FormError message={form.formState.errors.skillLevel?.message} />
           </label>
           <label className="grid gap-2">

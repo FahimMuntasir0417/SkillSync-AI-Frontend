@@ -3,12 +3,20 @@ import type { RoadmapInput } from "../schemas/roadmap.schema";
 
 export type RoadmapResult = {
   title?: string;
+  durationWeeks?: number;
+  summary?: string;
   phases?: Array<{
     title?: string;
+    phaseTitle?: string;
     duration?: string;
+    weekRange?: string;
     skills?: string[];
+    topics?: string[];
+    tasks?: string[];
+    resources?: string[];
     projects?: string[];
     milestones?: string[];
+    outcome?: string;
   }>;
   skillsToLearn?: string[];
   projectsToBuild?: string[];
@@ -27,9 +35,6 @@ export async function generateRoadmap(payload: RoadmapInput) {
     goal: payload.targetRole,
     level: payload.currentLevel,
     weeklyHours: payload.weeklyStudyHours,
-    knownSkills: payload.knownSkills,
-    preferredLearningStyle: payload.preferredLearningStyle,
-    targetTimeline: payload.targetTimeline,
   });
 
   return response.data.data;
