@@ -1,12 +1,11 @@
 "use client";
 
 import {
-  BookOpen,
   ChevronDown,
   LayoutDashboard,
   LogOut,
   Menu,
-  Search,
+  Sparkles,
   User,
   X,
 } from "lucide-react";
@@ -17,11 +16,10 @@ import { ThemeToggle } from "./theme-toggle";
 import { clearStoredToken, getStoredToken } from "@/lib/api/skillsync";
 
 const publicRoutes = [
-  { href: "/", label: "Home" },
-  { href: "/courses", label: "Courses" },
-  { href: "/blogs", label: "Blogs" },
-  { href: "/about", label: "About" },
-  { href: "/contact", label: "Contact" },
+  { href: "/#features", label: "Features" },
+  { href: "/#how-it-works", label: "How it Works" },
+  { href: "/#ai-tools", label: "AI Tools" },
+  { href: "/#pricing", label: "Pricing" },
 ];
 
 const protectedRoutes = [
@@ -53,11 +51,11 @@ export function SiteHeader() {
   };
 
   return (
-    <header className="sticky top-0 z-50 border-b border-border bg-background/95 backdrop-blur">
+    <header className="sticky top-0 z-50 border-b border-border bg-background/80 backdrop-blur-xl">
       <div className="container-shell flex h-16 items-center justify-between gap-4">
         <Link className="flex items-center gap-3 font-bold" href="/">
-          <span className="flex size-10 items-center justify-center rounded-card bg-primary text-primary-foreground">
-            <BookOpen className="size-5" />
+          <span className="flex size-10 items-center justify-center rounded-card bg-primary text-primary-foreground shadow-[0_12px_30px_color-mix(in_srgb,var(--primary)_26%,transparent)]">
+            <Sparkles className="size-5" />
           </span>
           <span>SkillSync AI</span>
         </Link>
@@ -75,10 +73,6 @@ export function SiteHeader() {
         </nav>
 
         <div className="hidden items-center gap-2 lg:flex">
-          <Button asChild href="/courses" size="sm" variant="outline">
-            <Search className="size-4" />
-            Explore
-          </Button>
           <ThemeToggle />
           {authenticated ? (
             <div className="relative">
@@ -119,7 +113,7 @@ export function SiteHeader() {
                 Login
               </Button>
               <Button asChild href="/register" size="sm">
-                Register
+                Get Started
               </Button>
             </>
           )}
@@ -161,7 +155,7 @@ export function SiteHeader() {
                   Login
                 </Button>
                 <Button asChild href="/register">
-                  Register
+                  Get Started
                 </Button>
               </div>
             )}

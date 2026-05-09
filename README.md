@@ -106,3 +106,12 @@ SkillSync AI Frontend is structured to demonstrate strong frontend engineering t
 The AI features are integrated as real dashboard tools with validation, loading states, error handling, result views, and API-ready service boundaries.
 
 The project is prepared for production hardening through strict TypeScript, linting, build checks, environment isolation, Zod response contracts, and a scalable architecture that can grow without rewriting the application.
+
+## UI/UX Highlights
+
+- Premium SaaS dashboard design
+- Responsive mobile-first layout
+- Reusable design system
+- Polished AI feature workflows
+- Loading, empty, and error states
+- Accessible form components

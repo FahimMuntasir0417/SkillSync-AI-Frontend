@@ -1,318 +1,298 @@
 import {
+  ArrowRight,
   BarChart3,
-  BookOpen,
   Bot,
+  BrainCircuit,
   CheckCircle2,
-  GraduationCap,
-  Layers,
+  FolderClock,
   MessageSquareText,
-  ShieldCheck,
+  Route,
   Sparkles,
-  Star,
-  Users,
+  Target,
+  WandSparkles,
 } from "lucide-react";
-import Link from "next/link";
-import { CourseCard } from "@/components/courses/course-card";
-import { HeroActions } from "@/components/home/hero-actions";
 import { Button } from "@/components/ui/button";
-import { CardSkeleton } from "@/components/ui/skeletons";
+import { FeatureCard } from "@/components/ui/feature-card";
 import { SectionHeading } from "@/components/ui/section-heading";
-import { StatusMessage } from "@/components/ui/status";
-import { publicApi, type Blog, type Category } from "@/lib/api/skillsync";
 
-async function loadHomeData() {
-  const [courses, categories, blogs] = await Promise.allSettled([
-    publicApi.featuredCourses(),
-    publicApi.categories(),
-    publicApi.blogs(),
-  ]);
-
-  return {
-    courses: courses.status === "fulfilled" ? courses.value.data : [],
-    categories: categories.status === "fulfilled" ? categories.value.data : [],
-    blogs: blogs.status === "fulfilled" ? blogs.value.data : [],
-    hasError: [courses, categories, blogs].some((result) => result.status === "rejected"),
-  };
-}
-
-const featureCards = [
+const features = [
   {
-    title: "Structured LMS",
-    description: "Courses, modules, lessons, assignments, submissions, and reviews work as one learning system.",
-    icon: Layers,
+    icon: Route,
+    title: "AI Roadmap Generator",
+    description: "Create a role-specific learning path with phases, skills, projects, and timelines.",
   },
   {
-    title: "AI Learning Tools",
-    description: "Roadmaps, study chat, skill-gap analysis, project recommendations, and assignment feedback.",
+    icon: Target,
+    title: "Skill Gap Analyzer",
+    description: "Compare your current skills against your target role and prioritize the next step.",
+  },
+  {
+    icon: WandSparkles,
+    title: "Project Recommender",
+    description: "Get portfolio project ideas matched to your stack, skill level, and available time.",
+  },
+  {
     icon: Bot,
+    title: "AI Chat Assistant",
+    description: "Ask for study guidance, concept explanations, roadmap review, and project advice.",
   },
   {
-    title: "Role-Based Dashboards",
-    description: "Separate student, instructor, and admin workspaces keep each workflow focused.",
-    icon: ShieldCheck,
+    icon: FolderClock,
+    title: "Saved Learning History",
+    description: "Keep generated roadmaps and recommendations organized for continuous progress.",
+  },
+  {
+    icon: BarChart3,
+    title: "Smart Dashboard",
+    description: "Track AI activity, learning progress, quick actions, and suggested next moves.",
   },
 ];
 
-const faqs = [
-  {
-    question: "Can students enroll and track progress?",
-    answer: "Yes. The backend supports enrollments, lesson completion, progress calculation, and my-classes views.",
-  },
-  {
-    question: "Can instructors review submissions?",
-    answer: "Yes. Instructors can manage own course assignments and review pending student submissions.",
-  },
-  {
-    question: "Does the AI return fake content when keys are missing?",
-    answer: "No. AI routes return a clear configuration error when OpenAI or Gemini is not configured.",
-  },
+const steps = [
+  "Enter your goal",
+  "Analyze your skills",
+  "Get AI roadmap",
+  "Build projects and track progress",
 ];
 
-export default async function HomePage() {
-  const { courses, categories, blogs, hasError } = await loadHomeData();
-  const publishedCourses = courses.slice(0, 4);
-  const totalLessons = courses.reduce((sum, course) => sum + course.totalLessons, 0);
-  const totalEnrollments = courses.reduce((sum, course) => sum + course.totalEnrollments, 0);
-  const averageRating =
-    courses.length > 0
-      ? (courses.reduce((sum, course) => sum + course.averageRating, 0) / courses.length).toFixed(1)
-      : "0.0";
+const tools = [
+  { icon: Route, title: "Roadmap Generator", href: "/roadmap-generator" },
+  { icon: Target, title: "Skill Gap Analyzer", href: "/skill-gap-analyzer" },
+  { icon: WandSparkles, title: "Project Recommender", href: "/project-recommender" },
+  { icon: MessageSquareText, title: "AI Assistant", href: "/ai-chat" },
+];
 
+export default function HomePage() {
   return (
-    <main>
-      <section className="bg-surface">
-        <div className="container-shell grid min-h-[66vh] items-center gap-10 py-12 lg:grid-cols-[1.05fr_0.95fr]">
+    <main className="overflow-hidden">
+      <section className="relative">
+        <div className="container-shell grid min-h-[68vh] items-center gap-12 py-14 lg:grid-cols-[1.02fr_0.98fr] lg:py-20">
           <div>
-            <p className="inline-flex rounded-full border border-border bg-muted px-3 py-1 text-sm font-semibold text-primary">
-              AI-powered learning management platform
-            </p>
-            <h1 className="mt-5 max-w-3xl text-4xl font-bold leading-tight md:text-6xl">
-              SkillSync AI turns learning into a measurable workflow.
+            <div className="inline-flex items-center gap-2 rounded-full border border-border bg-surface/80 px-3 py-1.5 text-sm font-semibold text-primary shadow-sm">
+              <Sparkles className="size-4" />
+              AI-powered career learning workspace
+            </div>
+            <h1 className="mt-6 max-w-4xl text-4xl font-bold leading-[1.05] tracking-tight md:text-6xl">
+              Build your AI-powered learning path with SkillSync AI
             </h1>
-            <p className="mt-5 max-w-2xl text-lg leading-8 text-muted-foreground">
-              Discover courses, complete lessons, submit assignments, receive instructor
-              reviews, manage support, and use AI tools for practical career growth.
+            <p className="mt-6 max-w-2xl text-lg leading-8 text-muted-foreground">
+              Generate personalized roadmaps, analyze skill gaps, get project ideas, and learn faster with an AI career assistant.
             </p>
-            <div className="mt-8">
-              <HeroActions />
+            <div className="mt-8 flex flex-col gap-3 sm:flex-row">
+              <Button asChild href="/register" size="lg">
+                Start Learning
+                <ArrowRight className="size-4" />
+              </Button>
+              <Button asChild href="/ai-chat" size="lg" variant="outline">
+                View AI Tools
+              </Button>
+            </div>
+            <div className="mt-8 grid max-w-xl grid-cols-3 gap-3">
+              <HeroMetric label="AI tools" value="4" />
+              <HeroMetric label="Workflows" value="8+" />
+              <HeroMetric label="Ready" value="24/7" />
             </div>
           </div>
 
-          <div className="grid gap-4">
-            <div className="card p-5">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm text-muted-foreground">Platform overview</p>
-                  <p className="mt-1 text-3xl font-bold">{courses.length}</p>
-                </div>
-                <BookOpen className="size-10 text-primary" />
-              </div>
-              <div className="mt-5 grid grid-cols-3 gap-3">
-                <Metric label="Lessons" value={totalLessons} />
-                <Metric label="Enrollments" value={totalEnrollments} />
-                <Metric label="Rating" value={averageRating} />
-              </div>
-            </div>
-            <div className="grid gap-4 sm:grid-cols-2">
-              <WorkflowCard icon={GraduationCap} label="Student" text="Learn, submit, review progress" />
-              <WorkflowCard icon={MessageSquareText} label="Instructor" text="Manage courses and reviews" />
-              <WorkflowCard icon={BarChart3} label="Admin" text="Monitor analytics and users" />
-              <WorkflowCard icon={Sparkles} label="AI" text="Generate guidance and feedback" />
-            </div>
-          </div>
+          <DashboardPreview />
         </div>
       </section>
 
-      <section className="container-shell py-16">
+      <section id="features" className="container-shell py-16">
         <SectionHeading
-          eyebrow="Core systems"
-          title="Everything needed for a serious learning platform"
-          description="The product experience is designed around real student, instructor, and admin workflows."
+          align="center"
+          eyebrow="Features"
+          title="Everything a focused learner needs"
+          description="SkillSync AI turns career uncertainty into a clean workflow: plan, analyze, build, ask, save, and improve."
         />
-        <div className="mt-8 grid gap-5 md:grid-cols-3">
-          {featureCards.map((feature) => (
-            <article className="card p-6" key={feature.title}>
-              <feature.icon className="size-9 text-primary" />
-              <h3 className="mt-5 text-xl font-bold">{feature.title}</h3>
-              <p className="mt-3 text-sm leading-6 text-muted-foreground">{feature.description}</p>
-            </article>
+        <div className="mt-10 grid gap-5 md:grid-cols-2 lg:grid-cols-3">
+          {features.map((feature) => (
+            <FeatureCard key={feature.title} {...feature} />
           ))}
         </div>
       </section>
 
-      <section className="bg-surface py-16">
+      <section id="how-it-works" className="bg-surface/60 py-16">
         <div className="container-shell">
           <SectionHeading
-            eyebrow="Featured courses"
-            title="Courses built for measurable progress"
-            description="Courses include practical modules, lessons, assignments, reviews, and progress tracking."
+            eyebrow="How it works"
+            title="From goal to execution in four steps"
+            description="A premium workflow for learners who want direction, feedback, and practical project momentum."
           />
-          {hasError ? (
-            <div className="mt-6">
-              <StatusMessage
-                message="Start the backend API and seed the database to load live courses."
-                title="Course data is unavailable"
-                tone="danger"
-              />
-            </div>
-          ) : null}
-          <div className="mt-8 grid gap-5 md:grid-cols-2 lg:grid-cols-4">
-            {publishedCourses.length > 0
-              ? publishedCourses.map((course) => <CourseCard course={course} key={course.id} />)
-              : Array.from({ length: 4 }).map((_, index) => <CardSkeleton key={index} />)}
-          </div>
-          <div className="mt-8">
-            <Button asChild href="/courses" variant="outline">
-              View all courses
-            </Button>
-          </div>
-        </div>
-      </section>
-
-      <section className="container-shell py-16">
-        <SectionHeading
-          eyebrow="Categories"
-          title="Explore by learning path"
-          description="Categories come from the backend catalog and help learners find a focused path."
-        />
-        <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          {categories.slice(0, 6).map((category: Category) => (
-            <Link className="card flex items-center gap-4 p-5 transition hover:-translate-y-1" href={`/courses?categoryId=${category.id}`} key={category.id}>
-              <span className="flex size-12 items-center justify-center rounded-card bg-muted text-primary">
-                <BookOpen className="size-5" />
-              </span>
-              <span>
-                <strong className="block">{category.name}</strong>
-                <span className="text-sm text-muted-foreground">{category.description}</span>
-              </span>
-            </Link>
-          ))}
-        </div>
-      </section>
-
-      <section className="bg-surface py-16">
-        <div className="container-shell grid gap-8 lg:grid-cols-4">
-          <StatCard icon={BookOpen} label="Published courses" value={courses.length} />
-          <StatCard icon={CheckCircle2} label="Course lessons" value={totalLessons} />
-          <StatCard icon={Users} label="Enrollments" value={totalEnrollments} />
-          <StatCard icon={Star} label="Average rating" value={averageRating} />
-        </div>
-      </section>
-
-      <section className="container-shell py-16">
-        <SectionHeading
-          eyebrow="Operational quality"
-          title="Designed around professional workflows"
-          description="The frontend maps to the backend's advanced engineering concepts instead of being a static marketing shell."
-        />
-        <div className="mt-8 grid gap-5 lg:grid-cols-3">
-          {[
-            "Service-layer ownership boundaries",
-            "Transactional learning operations",
-            "AI audit logging and admin review",
-            "Role-based dashboards",
-            "Course progress analytics",
-            "Support ticket lifecycle",
-          ].map((item) => (
-            <div className="card flex items-center gap-3 p-5" key={item}>
-              <CheckCircle2 className="size-5 text-success" />
-              <span className="font-semibold">{item}</span>
-            </div>
-          ))}
-        </div>
-      </section>
-
-      <section className="bg-surface py-16">
-        <div className="container-shell">
-          <SectionHeading
-            eyebrow="Latest blogs"
-            title="Learning guidance from the platform"
-            description="Blog content is loaded from the backend and supports the learning experience."
-          />
-          <div className="mt-8 grid gap-5 md:grid-cols-3">
-            {blogs.slice(0, 3).map((blog: Blog) => (
-              <Link className="card flex min-h-64 flex-col p-6 transition hover:-translate-y-1" href={`/blogs/${blog.slug}`} key={blog.id}>
-                <p className="text-sm font-semibold text-primary">{new Date(blog.createdAt).toLocaleDateString()}</p>
-                <h3 className="mt-3 text-xl font-bold">{blog.title}</h3>
-                <p className="mt-3 line-clamp-4 text-sm leading-6 text-muted-foreground">{blog.excerpt}</p>
-                <span className="mt-auto pt-5 text-sm font-bold text-secondary">Read article</span>
-              </Link>
+          <div className="mt-10 grid gap-4 md:grid-cols-4">
+            {steps.map((step, index) => (
+              <div className="card relative p-5" key={step}>
+                <span className="grid size-10 place-items-center rounded-2xl bg-primary text-sm font-bold text-primary-foreground">
+                  {index + 1}
+                </span>
+                <h3 className="mt-5 text-lg font-bold">{step}</h3>
+                <p className="mt-2 text-sm leading-6 text-muted-foreground">
+                  {index === 0 && "Set a role, skill target, timeline, or project direction."}
+                  {index === 1 && "Share your current skills and preferred technologies."}
+                  {index === 2 && "Receive structured phases, priorities, and recommendations."}
+                  {index === 3 && "Use projects and chat support to keep moving forward."}
+                </p>
+              </div>
             ))}
           </div>
         </div>
       </section>
 
-      <section className="container-shell py-16">
-        <SectionHeading eyebrow="FAQ" title="Questions teams ask before implementation" />
-        <div className="mt-8 grid gap-4">
-          {faqs.map((faq) => (
-            <article className="card p-5" key={faq.question}>
-              <h3 className="font-bold">{faq.question}</h3>
-              <p className="mt-2 text-sm leading-6 text-muted-foreground">{faq.answer}</p>
-            </article>
+      <section id="ai-tools" className="container-shell py-16">
+        <SectionHeading
+          align="center"
+          eyebrow="AI tools"
+          title="Purpose-built AI workflows"
+          description="Each tool is designed for a specific learner decision, with clear inputs and useful results."
+        />
+        <div className="mt-10 grid gap-5 md:grid-cols-2 lg:grid-cols-4">
+          {tools.map((tool) => (
+            <a className="card group p-6 transition hover:-translate-y-1 hover:border-primary/40 hover:shadow-soft" href={tool.href} key={tool.title}>
+              <div className="grid size-12 place-items-center rounded-2xl bg-primary/10 text-primary">
+                <tool.icon className="size-6" />
+              </div>
+              <h3 className="mt-5 font-bold">{tool.title}</h3>
+              <p className="mt-3 text-sm leading-6 text-muted-foreground">
+                Open a focused workspace with form guidance, loading states, and polished AI output.
+              </p>
+              <span className="mt-5 inline-flex items-center gap-2 text-sm font-bold text-primary">
+                Open tool <ArrowRight className="size-4 transition group-hover:translate-x-1" />
+              </span>
+            </a>
           ))}
         </div>
       </section>
 
-      <section className="container-shell pb-16">
-        <div className="card grid gap-6 bg-primary p-8 text-primary-foreground md:grid-cols-[1fr_auto] md:items-center">
-          <div>
-            <h2 className="text-3xl font-bold">Start with real course data and role workflows.</h2>
-            <p className="mt-3 max-w-2xl text-sm leading-6 opacity-90">
-              Use the backend seed command, log in with demo credentials, and test the student,
-              instructor, and admin experiences end to end.
-            </p>
+      <section id="pricing" className="bg-surface/60 py-16">
+        <div className="container-shell">
+          <div className="grid gap-6 rounded-[24px] border border-border bg-card p-8 shadow-card lg:grid-cols-[1fr_auto] lg:items-center">
+            <div>
+              <p className="text-sm font-bold uppercase tracking-[0.16em] text-primary">Pricing</p>
+              <h2 className="mt-3 text-3xl font-bold tracking-tight">Contest demo access is ready</h2>
+              <p className="mt-3 max-w-2xl text-sm leading-6 text-muted-foreground">
+                The current frontend is optimized for demo and evaluation. Pricing tiers can be connected when subscription endpoints are available.
+              </p>
+            </div>
+            <Button asChild href="/register" size="lg">
+              Start free
+            </Button>
           </div>
-          <Button asChild href="/login" variant="secondary">
-            Login to dashboard
-          </Button>
+        </div>
+      </section>
+
+      <section className="container-shell pb-16">
+        <div className="glass-panel overflow-hidden rounded-[24px] p-8 md:p-10">
+          <div className="grid gap-8 lg:grid-cols-[1fr_auto] lg:items-center">
+            <div>
+              <p className="text-sm font-bold uppercase tracking-[0.16em] text-primary">Start now</p>
+              <h2 className="mt-3 text-3xl font-bold tracking-tight md:text-4xl">
+                Ready to build your personalized learning path?
+              </h2>
+              <p className="mt-4 max-w-2xl text-sm leading-6 text-muted-foreground">
+                Create your account, open the dashboard, and use the AI workflows to turn your goals into a practical plan.
+              </p>
+            </div>
+            <div className="flex flex-col gap-3 sm:flex-row">
+              <Button asChild href="/register" size="lg">
+                Get Started
+              </Button>
+              <Button asChild href="/login" size="lg" variant="outline">
+                Login
+              </Button>
+            </div>
+          </div>
         </div>
       </section>
     </main>
   );
 }
 
-function Metric({ label, value }: { label: string; value: number | string }) {
+function HeroMetric({ label, value }: { label: string; value: string }) {
   return (
-    <div className="rounded-card bg-muted p-3">
+    <div className="rounded-card border border-border bg-surface/70 p-3 shadow-sm">
       <p className="text-xl font-bold">{value}</p>
-      <p className="text-xs text-muted-foreground">{label}</p>
+      <p className="text-xs font-medium text-muted-foreground">{label}</p>
     </div>
   );
 }
 
-function WorkflowCard({
-  icon: Icon,
-  label,
-  text,
-}: {
-  icon: typeof BookOpen;
-  label: string;
-  text: string;
-}) {
+function DashboardPreview() {
   return (
-    <div className="card p-5">
-      <Icon className="size-7 text-primary" />
-      <p className="mt-3 font-bold">{label}</p>
-      <p className="mt-1 text-sm text-muted-foreground">{text}</p>
+    <div className="glass-panel rounded-[28px] p-4 md:p-5">
+      <div className="rounded-[22px] border border-border bg-card p-4 shadow-card">
+        <div className="flex items-center justify-between border-b border-border pb-4">
+          <div>
+            <p className="text-sm font-bold">SkillSync Dashboard</p>
+            <p className="text-xs text-muted-foreground">AI learning progress</p>
+          </div>
+          <div className="flex gap-1.5">
+            <span className="size-2.5 rounded-full bg-danger" />
+            <span className="size-2.5 rounded-full bg-warning" />
+            <span className="size-2.5 rounded-full bg-success" />
+          </div>
+        </div>
+        <div className="mt-5 grid gap-4 md:grid-cols-[1fr_0.8fr]">
+          <div className="rounded-card bg-muted/70 p-4">
+            <div className="flex items-center justify-between">
+              <p className="font-bold">Roadmap progress</p>
+              <span className="rounded-full bg-success/10 px-2 py-1 text-xs font-bold text-success">64%</span>
+            </div>
+            <div className="mt-4 h-2 rounded-full bg-surface">
+              <div className="h-2 w-[64%] rounded-full bg-primary" />
+            </div>
+            <div className="mt-4 grid gap-2">
+              {["React architecture", "API integration", "Portfolio project"].map((item) => (
+                <div className="flex items-center gap-2 text-sm" key={item}>
+                  <CheckCircle2 className="size-4 text-success" />
+                  {item}
+                </div>
+              ))}
+            </div>
+          </div>
+          <div className="rounded-card border border-border p-4">
+            <p className="font-bold">Skill gap</p>
+            <div className="mt-4 grid gap-3">
+              <PreviewBar label="TypeScript" value="82%" width="82%" />
+              <PreviewBar label="System design" value="48%" width="48%" />
+              <PreviewBar label="Testing" value="58%" width="58%" />
+            </div>
+          </div>
+        </div>
+        <div className="mt-4 grid gap-4 md:grid-cols-2">
+          <div className="rounded-card border border-border p-4">
+            <div className="flex items-center gap-3">
+              <BrainCircuit className="size-5 text-primary" />
+              <p className="font-bold">AI recommendation</p>
+            </div>
+            <p className="mt-3 text-sm leading-6 text-muted-foreground">
+              Build a Next.js analytics dashboard with role-based views and API caching.
+            </p>
+          </div>
+          <div className="rounded-card bg-primary p-4 text-primary-foreground">
+            <div className="flex items-center gap-3">
+              <Bot className="size-5" />
+              <p className="font-bold">Mini chat</p>
+            </div>
+            <p className="mt-3 text-sm leading-6 opacity-90">
+              “Create a 6-week plan for full-stack interview prep.”
+            </p>
+          </div>
+        </div>
+      </div>
     </div>
   );
 }
 
-function StatCard({
-  icon: Icon,
-  label,
-  value,
-}: {
-  icon: typeof BookOpen;
-  label: string;
-  value: number | string;
-}) {
+function PreviewBar({ label, value, width }: { label: string; value: string; width: string }) {
   return (
-    <div className="card p-6">
-      <Icon className="size-8 text-primary" />
-      <p className="mt-5 text-3xl font-bold">{value}</p>
-      <p className="mt-1 text-sm text-muted-foreground">{label}</p>
+    <div>
+      <div className="flex justify-between text-xs font-semibold">
+        <span>{label}</span>
+        <span className="text-muted-foreground">{value}</span>
+      </div>
+      <div className="mt-1.5 h-2 rounded-full bg-muted">
+        <div className="h-2 rounded-full bg-secondary" style={{ width }} />
+      </div>
     </div>
   );
 }

@@ -17,7 +17,7 @@ export default function SkillGapAnalyzerPage() {
       />
       <div className="grid gap-6 xl:grid-cols-[0.9fr_1.1fr]">
         <SkillGapForm isLoading={skillGapMutation.isPending} onSubmit={(payload) => skillGapMutation.mutate(payload)} />
-        <SkillGapResult result={skillGapMutation.data} />
+        <SkillGapResult error={skillGapMutation.error} isLoading={skillGapMutation.isPending} result={skillGapMutation.data} />
       </div>
     </main>
   );

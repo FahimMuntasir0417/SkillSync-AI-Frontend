@@ -423,7 +423,11 @@ type FetchOptions = RequestInit & {
 };
 
 const buildUrl = (path: string, query?: FetchOptions["query"]) => {
-  const url = new URL(`${env.NEXT_PUBLIC_API_BASE_URL}${path}`);
+  const apiBaseUrl =
+    typeof window === "undefined"
+      ? env.NEXT_PUBLIC_API_BASE_URL
+      : `${window.location.origin}/api/v1`;
+  const url = new URL(`${apiBaseUrl.replace(/\/+$/, "")}${path}`);
 
   Object.entries(query ?? {}).forEach(([key, value]) => {
     if (value !== undefined && value !== "") {

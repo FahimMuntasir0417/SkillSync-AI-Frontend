@@ -1,3 +1,5 @@
+import { AlertCircle } from "lucide-react";
+
 type FormErrorProps = {
   message?: string;
 };
@@ -7,5 +9,10 @@ export function FormError({ message }: FormErrorProps) {
     return null;
   }
 
-  return <p className="text-sm font-medium text-danger">{message}</p>;
+  return (
+    <p className="flex items-center gap-1.5 text-sm font-medium text-danger">
+      <AlertCircle className="size-3.5" />
+      {message}
+    </p>
+  );
 }

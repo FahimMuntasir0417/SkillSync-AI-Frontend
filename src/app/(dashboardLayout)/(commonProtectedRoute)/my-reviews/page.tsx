@@ -1,12 +1,5 @@
-﻿import { DashboardWorkspacePage } from "@/app/(dashboardLayout)/_components/dashboard-workspace-page";
+import { ReviewsView } from "@/app/(dashboardLayout)/_components/dashboard-resource-views";
 
 export default function Page() {
-  return (
-    <DashboardWorkspacePage
-      eyebrow="Common"
-      title="My reviews"
-      description="Review course ratings and instructor feedback."
-      actions={[{ href: "/courses", label: "Review courses" }]}
-    />
-  );
+  return <ReviewsView />;
 }

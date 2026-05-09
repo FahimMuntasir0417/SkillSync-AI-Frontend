@@ -1,11 +1,12 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Loader2, ShieldCheck, UserRound } from "lucide-react";
+import { Code2, Loader2, ShieldCheck, Target, UserRound } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 import { Card, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { FormError } from "@/components/ui/form-error";
 import { Input } from "@/components/ui/input";
@@ -88,8 +89,10 @@ export default function ProfilePage() {
             </div>
           ) : (
             <div className="grid gap-4">
-              <div className="flex items-center gap-3 rounded-card bg-muted p-4">
-                <UserRound className="size-5 text-primary" />
+              <div className="flex items-center gap-4 rounded-card bg-muted p-4">
+                <div className="grid size-14 place-items-center rounded-2xl bg-primary text-primary-foreground">
+                  <UserRound className="size-7" />
+                </div>
                 <div>
                   <p className="font-bold">{user?.name ?? "Unknown user"}</p>
                   <p className="text-sm text-muted-foreground">{user?.email ?? "No email available"}</p>
@@ -99,6 +102,26 @@ export default function ProfilePage() {
                 <ShieldCheck className="size-5 text-primary" />
                 <p className="text-sm font-semibold">{user?.role ?? "User"}</p>
               </div>
+              <section className="rounded-card border border-border p-4">
+                <div className="flex items-center gap-2 font-bold">
+                  <Target className="size-4 text-primary" />
+                  Learning goal
+                </div>
+                <p className="mt-2 text-sm leading-6 text-muted-foreground">
+                  Become a job-ready full-stack developer with strong AI-assisted workflow habits.
+                </p>
+              </section>
+              <section className="rounded-card border border-border p-4">
+                <div className="flex items-center gap-2 font-bold">
+                  <Code2 className="size-4 text-primary" />
+                  Skills and preferred stack
+                </div>
+                <div className="mt-3 flex flex-wrap gap-2">
+                  {["Next.js", "TypeScript", "Node.js", "Prisma", "PostgreSQL"].map((skill) => (
+                    <Badge key={skill} variant="primary">{skill}</Badge>
+                  ))}
+                </div>
+              </section>
             </div>
           )}
         </Card>

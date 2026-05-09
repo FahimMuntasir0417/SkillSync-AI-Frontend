@@ -1,12 +1,5 @@
-﻿import { DashboardWorkspacePage } from "@/app/(dashboardLayout)/_components/dashboard-workspace-page";
+import { CoursesManagementView } from "@/app/(dashboardLayout)/_components/dashboard-resource-views";
 
 export default function Page() {
-  return (
-    <DashboardWorkspacePage
-      eyebrow="Instructor"
-      title="My courses"
-      description="Create and manage instructor-owned courses."
-      actions={[{ href: "/courses", label: "Course catalog" }]}
-    />
-  );
+  return <CoursesManagementView eyebrow="Instructor" title="My courses" />;
 }

@@ -3,13 +3,15 @@
 import { X } from "lucide-react";
 import { DashboardSidebar } from "@/components/layout/dashboard-sidebar";
 import { Button } from "@/components/ui/button";
+import type { UserRole } from "@/lib/authUtils";
 
 type MobileSidebarProps = {
   open: boolean;
   onClose: () => void;
+  role: UserRole;
 };
 
-export function MobileSidebar({ onClose, open }: MobileSidebarProps) {
+export function MobileSidebar({ onClose, open, role }: MobileSidebarProps) {
   if (!open) {
     return null;
   }
@@ -20,7 +22,7 @@ export function MobileSidebar({ onClose, open }: MobileSidebarProps) {
         <Button className="absolute right-3 top-3 z-10" onClick={onClose} size="icon" variant="outline">
           <X className="size-4" />
         </Button>
-        <DashboardSidebar className="block lg:hidden" onNavigate={onClose} />
+        <DashboardSidebar className="block lg:hidden" onNavigate={onClose} role={role} />
       </div>
     </div>
   );

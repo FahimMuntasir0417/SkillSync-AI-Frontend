@@ -1,12 +1,5 @@
-﻿import { DashboardWorkspacePage } from "@/app/(dashboardLayout)/_components/dashboard-workspace-page";
+import { MyClassesView } from "@/app/(dashboardLayout)/_components/dashboard-resource-views";
 
 export default function Page() {
-  return (
-    <DashboardWorkspacePage
-      eyebrow="Student"
-      title="My learning"
-      description="Track enrolled courses, lesson completion, and progress."
-      actions={[{ href: "/my-classes", label: "My classes" }]}
-    />
-  );
+  return <MyClassesView eyebrow="Student" title="My learning" />;
 }

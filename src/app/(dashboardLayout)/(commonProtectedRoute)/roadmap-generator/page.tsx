@@ -17,7 +17,7 @@ export default function RoadmapGeneratorPage() {
       />
       <div className="grid gap-6 xl:grid-cols-[0.9fr_1.1fr]">
         <RoadmapForm isLoading={roadmapMutation.isPending} onSubmit={(payload) => roadmapMutation.mutate(payload)} />
-        <RoadmapResult result={roadmapMutation.data} />
+        <RoadmapResult error={roadmapMutation.error} isLoading={roadmapMutation.isPending} result={roadmapMutation.data} />
       </div>
     </main>
   );

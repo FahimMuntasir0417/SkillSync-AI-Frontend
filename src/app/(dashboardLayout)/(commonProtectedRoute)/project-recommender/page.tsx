@@ -17,7 +17,7 @@ export default function ProjectRecommenderPage() {
       />
       <div className="grid gap-6 xl:grid-cols-[0.9fr_1.1fr]">
         <ProjectRecommenderForm isLoading={projectMutation.isPending} onSubmit={(payload) => projectMutation.mutate(payload)} />
-        <ProjectRecommenderResult projects={projectMutation.data} />
+        <ProjectRecommenderResult error={projectMutation.error} isLoading={projectMutation.isPending} projects={projectMutation.data} />
       </div>
     </main>
   );

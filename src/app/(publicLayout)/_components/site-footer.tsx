@@ -1,34 +1,38 @@
-import { Code2, Mail, MapPin, Phone, Share2, Users } from "lucide-react";
+import { Code2, Mail, MapPin, Phone, Share2, Sparkles, Users } from "lucide-react";
 import Link from "next/link";
 
 const links = [
-  { href: "/courses", label: "Courses" },
-  { href: "/blogs", label: "Blogs" },
-  { href: "/about", label: "About" },
-  { href: "/contact", label: "Contact" },
-  { href: "/help", label: "Help" },
+  { href: "/#features", label: "Features" },
+  { href: "/#how-it-works", label: "How it Works" },
+  { href: "/#ai-tools", label: "AI Tools" },
+  { href: "/login", label: "Login" },
+  { href: "/register", label: "Get Started" },
   { href: "/privacy", label: "Privacy" },
   { href: "/terms", label: "Terms" },
 ];
 
 export function SiteFooter() {
   return (
-    <footer className="border-t border-border bg-surface">
+    <footer className="border-t border-border bg-surface/80">
       <div className="container-shell grid gap-10 py-12 lg:grid-cols-[1.2fr_0.8fr_0.8fr]">
         <div>
-          <h2 className="text-xl font-bold">SkillSync AI</h2>
+          <div className="flex items-center gap-3">
+            <span className="grid size-10 place-items-center rounded-card bg-primary text-primary-foreground">
+              <Sparkles className="size-5" />
+            </span>
+            <h2 className="text-xl font-bold">SkillSync AI</h2>
+          </div>
           <p className="mt-3 max-w-md text-sm leading-6 text-muted-foreground">
-            A professional learning platform for structured courses, instructor feedback,
-            support, dashboards, and AI-assisted learning workflows.
+            A premium AI learning workspace for roadmaps, skill-gap analysis, project recommendations, and career-focused study support.
           </p>
           <div className="mt-5 flex gap-3">
-            <Link aria-label="GitHub" className="rounded-card border border-border p-2 hover:bg-muted" href="https://github.com/FahimMuntasir0417">
+            <Link aria-label="GitHub" className="rounded-card border border-border p-2 transition hover:bg-muted" href="https://github.com/FahimMuntasir0417">
               <Code2 className="size-4" />
             </Link>
-            <Link aria-label="LinkedIn" className="rounded-card border border-border p-2 hover:bg-muted" href="https://www.linkedin.com">
+            <Link aria-label="LinkedIn" className="rounded-card border border-border p-2 transition hover:bg-muted" href="https://www.linkedin.com">
               <Users className="size-4" />
             </Link>
-            <Link aria-label="Facebook" className="rounded-card border border-border p-2 hover:bg-muted" href="https://www.facebook.com">
+            <Link aria-label="Facebook" className="rounded-card border border-border p-2 transition hover:bg-muted" href="https://www.facebook.com">
               <Share2 className="size-4" />
             </Link>
           </div>
@@ -38,7 +42,7 @@ export function SiteFooter() {
           <h3 className="font-semibold">Navigation</h3>
           <div className="mt-4 grid gap-2">
             {links.map((link) => (
-              <Link className="text-sm text-muted-foreground hover:text-foreground" href={link.href} key={link.href}>
+              <Link className="text-sm text-muted-foreground transition hover:text-foreground" href={link.href} key={link.href}>
                 {link.label}
               </Link>
             ))}

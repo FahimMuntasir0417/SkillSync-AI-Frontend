@@ -1,12 +1,5 @@
-﻿import { DashboardWorkspacePage } from "@/app/(dashboardLayout)/_components/dashboard-workspace-page";
+import { CoursesManagementView } from "@/app/(dashboardLayout)/_components/dashboard-resource-views";
 
 export default function Page() {
-  return (
-    <DashboardWorkspacePage
-      eyebrow="Student"
-      title="Browse courses"
-      description="Explore the public course catalog from the student workspace."
-      actions={[{ href: "/courses", label: "Open catalog" }]}
-    />
-  );
+  return <CoursesManagementView eyebrow="Student" title="Browse courses" />;
 }

@@ -1,7 +1,11 @@
 import axios from "axios";
+import { env } from "@/config/env";
+
+const externalApiBaseUrl = env.NEXT_PUBLIC_API_BASE_URL.replace(/\/+$/, "");
+const apiBaseUrl = typeof window === "undefined" ? externalApiBaseUrl : "/api/v1";
 
 export const apiClient = axios.create({
-  baseURL: process.env.NEXT_PUBLIC_API_BASE_URL,
+  baseURL: apiBaseUrl,
   withCredentials: true,
   headers: {
     "Content-Type": "application/json",

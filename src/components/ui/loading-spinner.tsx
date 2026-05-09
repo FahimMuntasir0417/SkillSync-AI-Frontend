@@ -3,13 +3,15 @@ import { cn } from "@/lib/utils";
 
 type LoadingSpinnerProps = {
   className?: string;
+  label?: string;
 };
 
-export function LoadingSpinner({ className }: LoadingSpinnerProps) {
+export function LoadingSpinner({ className, label = "Loading" }: LoadingSpinnerProps) {
   return (
     <Loader2
-      aria-label="Loading"
-      className={cn("size-4 animate-spin", className)}
+      aria-label={label}
+      className={cn("size-4 animate-spin text-current", className)}
+      role="status"
     />
   );
 }

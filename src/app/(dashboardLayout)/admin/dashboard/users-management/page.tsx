@@ -1,12 +1,5 @@
-﻿import { DashboardWorkspacePage } from "@/app/(dashboardLayout)/_components/dashboard-workspace-page";
+import { UsersManagementView } from "@/app/(dashboardLayout)/_components/dashboard-resource-views";
 
 export default function Page() {
-  return (
-    <DashboardWorkspacePage
-      eyebrow="Admin"
-      title="Users management"
-      description="Manage users, role changes, and blocked status."
-      actions={[{ href: "/admin/dashboard", label: "Admin overview" }]}
-    />
-  );
+  return <UsersManagementView />;
 }

@@ -1,12 +1,5 @@
-﻿import { DashboardWorkspacePage } from "@/app/(dashboardLayout)/_components/dashboard-workspace-page";
+import { MySubmissionsView } from "@/app/(dashboardLayout)/_components/dashboard-resource-views";
 
 export default function Page() {
-  return (
-    <DashboardWorkspacePage
-      eyebrow="Student"
-      title="Submissions"
-      description="Submit assignment work and track feedback."
-      actions={[{ href: "/my-submissions", label: "My submissions" }]}
-    />
-  );
+  return <MySubmissionsView eyebrow="Student" title="Submissions" />;
 }

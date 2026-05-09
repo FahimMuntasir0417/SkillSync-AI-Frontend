@@ -1,3 +1,5 @@
+import { DashboardFrame } from "./_components/dashboard-frame";
+
 export default function DashboardLayout({
   children,
 }: Readonly<{
@@ -5,7 +7,7 @@ export default function DashboardLayout({
 }>) {
   return (
     <div className="min-h-screen overflow-x-clip bg-background text-foreground">
-      {children}
+      <DashboardFrame>{children}</DashboardFrame>
     </div>
   );
 }

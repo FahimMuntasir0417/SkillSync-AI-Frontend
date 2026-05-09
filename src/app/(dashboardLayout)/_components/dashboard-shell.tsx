@@ -3,60 +3,15 @@
 import {
   BarChart3,
   BookOpen,
-  Bot,
   ClipboardList,
-  GraduationCap,
-  HelpCircle,
-  LayoutDashboard,
-  Settings,
-  Shield,
-  Ticket,
-  User,
   Users,
 } from "lucide-react";
-import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { StatusMessage } from "@/components/ui/status";
 import { apiFetch, getStoredToken, type Course } from "@/lib/api/skillsync";
 
 type DashboardRole = "student" | "instructor" | "admin";
-
-const menu = {
-  student: [
-    { href: "/dashboard", label: "Overview", icon: LayoutDashboard },
-    { href: "/dashboard/browse-courses", label: "Browse Courses", icon: BookOpen },
-    { href: "/dashboard/my-learning", label: "My Learning", icon: GraduationCap },
-    { href: "/dashboard/assignments", label: "Assignments", icon: ClipboardList },
-    { href: "/dashboard/submissions", label: "Submissions", icon: ClipboardList },
-    { href: "/dashboard/ai-tools", label: "AI Tools", icon: Bot },
-    { href: "/courses", label: "Courses", icon: BookOpen },
-    { href: "/support", label: "Support", icon: HelpCircle },
-  ],
-  instructor: [
-    { href: "/instructor/dashboard", label: "Overview", icon: LayoutDashboard },
-    { href: "/instructor/dashboard/my-courses", label: "My Courses", icon: BookOpen },
-    { href: "/instructor/dashboard/course-modules", label: "Modules", icon: ClipboardList },
-    { href: "/instructor/dashboard/lessons", label: "Lessons", icon: GraduationCap },
-    { href: "/instructor/dashboard/assignments", label: "Assignments", icon: ClipboardList },
-    { href: "/instructor/dashboard/submissions", label: "Reviews", icon: ClipboardList },
-    { href: "/instructor/dashboard/blogs", label: "Blogs", icon: BookOpen },
-    { href: "/courses", label: "My Courses", icon: BookOpen },
-  ],
-  admin: [
-    { href: "/admin/dashboard", label: "Overview", icon: LayoutDashboard },
-    { href: "/admin/dashboard/users-management", label: "Users", icon: Users },
-    { href: "/admin/dashboard/category-management", label: "Categories", icon: ClipboardList },
-    { href: "/admin/dashboard/courses-management", label: "Courses", icon: BookOpen },
-    { href: "/admin/dashboard/support-management", label: "Support", icon: Ticket },
-    { href: "/admin/dashboard/ai-logs", label: "AI Logs", icon: Bot },
-    { href: "/admin/dashboard/blog-management", label: "Blogs", icon: BookOpen },
-    { href: "/courses", label: "Courses", icon: BookOpen },
-    { href: "/support", label: "Support", icon: Ticket },
-    { href: "/ai", label: "AI Logs", icon: Bot },
-    { href: "/profile", label: "Settings", icon: Settings },
-  ],
-};
 
 export function DashboardShell({ role }: { role: DashboardRole }) {
   const [courses, setCourses] = useState<Course[]>([]);
@@ -93,28 +48,7 @@ export function DashboardShell({ role }: { role: DashboardRole }) {
     : "0.0";
 
   return (
-    <main className="container-shell grid gap-6 py-8 lg:grid-cols-[260px_1fr]">
-      <aside className="card h-fit p-4">
-        <div className="mb-5 flex items-center gap-3">
-          <span className="flex size-10 items-center justify-center rounded-card bg-primary text-primary-foreground">
-            {role === "admin" ? <Shield className="size-5" /> : <User className="size-5" />}
-          </span>
-          <div>
-            <p className="font-bold capitalize">{role} dashboard</p>
-            <p className="text-xs text-muted-foreground">Role workspace</p>
-          </div>
-        </div>
-        <nav className="grid gap-2">
-          {menu[role].map((item) => (
-            <Link className="flex items-center gap-3 rounded-card px-3 py-2 text-sm font-semibold text-muted-foreground hover:bg-muted hover:text-foreground" href={item.href} key={item.href}>
-              <item.icon className="size-4" />
-              {item.label}
-            </Link>
-          ))}
-        </nav>
-      </aside>
-
-      <section className="space-y-6">
+    <main className="space-y-6 p-4 md:p-8">
         <div className="flex flex-col justify-between gap-4 md:flex-row md:items-center">
           <div>
             <p className="text-sm font-bold uppercase text-primary">Overview</p>
@@ -193,7 +127,6 @@ export function DashboardShell({ role }: { role: DashboardRole }) {
             </div>
           </div>
         </div>
-      </section>
     </main>
   );
 }

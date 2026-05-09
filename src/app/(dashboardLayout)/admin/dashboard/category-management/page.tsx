@@ -1,12 +1,5 @@
-﻿import { DashboardWorkspacePage } from "@/app/(dashboardLayout)/_components/dashboard-workspace-page";
+import { CategoryManagementView } from "@/app/(dashboardLayout)/_components/dashboard-resource-views";
 
 export default function Page() {
-  return (
-    <DashboardWorkspacePage
-      eyebrow="Admin"
-      title="Category management"
-      description="Create and update course categories."
-      actions={[{ href: "/courses", label: "Courses" }]}
-    />
-  );
+  return <CategoryManagementView />;
 }

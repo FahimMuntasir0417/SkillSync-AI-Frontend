@@ -1,16 +1,20 @@
+import { cn } from "@/lib/utils";
+
 type SectionHeadingProps = {
   eyebrow?: string;
   title: string;
   description?: string;
+  align?: "left" | "center";
+  className?: string;
 };
 
-export function SectionHeading({ eyebrow, title, description }: SectionHeadingProps) {
+export function SectionHeading({ align = "left", className, description, eyebrow, title }: SectionHeadingProps) {
   return (
-    <div className="max-w-3xl">
+    <div className={cn("max-w-3xl", align === "center" && "mx-auto text-center", className)}>
       {eyebrow ? (
-        <p className="text-sm font-bold uppercase text-primary">{eyebrow}</p>
+        <p className="text-sm font-bold uppercase tracking-[0.16em] text-primary">{eyebrow}</p>
       ) : null}
-      <h2 className="mt-2 text-3xl font-bold leading-tight text-foreground md:text-4xl">
+      <h2 className="mt-2 text-3xl font-bold leading-tight tracking-tight text-foreground md:text-4xl">
         {title}
       </h2>
       {description ? (

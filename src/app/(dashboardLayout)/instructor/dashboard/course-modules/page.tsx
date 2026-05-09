@@ -1,12 +1,5 @@
-﻿import { DashboardWorkspacePage } from "@/app/(dashboardLayout)/_components/dashboard-workspace-page";
+import { CourseModulesView } from "@/app/(dashboardLayout)/_components/dashboard-resource-views";
 
 export default function Page() {
-  return (
-    <DashboardWorkspacePage
-      eyebrow="Instructor"
-      title="Course modules"
-      description="Organize course modules and lesson groups."
-      actions={[{ href: "/instructor/dashboard/lessons", label: "Lessons" }]}
-    />
-  );
+  return <CourseModulesView />;
 }

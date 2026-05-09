@@ -1,6 +1,6 @@
 "use client";
 
-import { LogOut, Menu } from "lucide-react";
+import { Bell, ChevronDown, LogOut, Menu, Search, UserRound } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useLogout } from "@/features/auth/hooks/use-logout";
 
@@ -12,18 +12,37 @@ export function DashboardHeader({ onMenuClick }: DashboardHeaderProps) {
   const logoutMutation = useLogout();
 
   return (
-    <header className="sticky top-0 z-30 flex h-16 items-center justify-between border-b border-border bg-background/90 px-4 backdrop-blur">
-      <Button className="lg:hidden" onClick={onMenuClick} size="icon" variant="outline">
-        <Menu className="size-4" />
-      </Button>
-      <div>
-        <p className="text-sm font-bold">AI Learning Workspace</p>
-        <p className="text-xs text-muted-foreground">Plan, analyze, recommend, and chat.</p>
+    <header className="sticky top-0 z-30 border-b border-border bg-background/82 px-4 backdrop-blur-xl">
+      <div className="flex h-16 items-center justify-between gap-4">
+        <div className="flex items-center gap-3">
+          <Button aria-label="Open dashboard menu" className="lg:hidden" onClick={onMenuClick} size="icon" variant="outline">
+            <Menu className="size-4" />
+          </Button>
+          <div className="hidden min-w-72 items-center gap-2 rounded-card border border-border bg-surface/80 px-3 py-2 shadow-sm md:flex">
+            <Search className="size-4 text-muted-foreground" />
+            <span className="text-sm text-muted-foreground">Search roadmaps, projects, skills...</span>
+          </div>
+        </div>
+        <div className="flex items-center gap-2">
+          <Button aria-label="Notifications" size="icon" variant="outline">
+            <Bell className="size-4" />
+          </Button>
+          <div className="hidden items-center gap-3 rounded-card border border-border bg-surface/80 px-3 py-2 shadow-sm sm:flex">
+            <span className="grid size-8 place-items-center rounded-full bg-primary/10 text-primary">
+              <UserRound className="size-4" />
+            </span>
+            <div className="text-left">
+              <p className="text-sm font-bold">Learner</p>
+              <p className="text-xs text-muted-foreground">Dashboard</p>
+            </div>
+            <ChevronDown className="size-4 text-muted-foreground" />
+          </div>
+          <Button disabled={logoutMutation.isPending} onClick={() => logoutMutation.mutate()} variant="outline">
+            <LogOut className="size-4" />
+            <span className="hidden sm:inline">Logout</span>
+          </Button>
+        </div>
       </div>
-      <Button disabled={logoutMutation.isPending} onClick={() => logoutMutation.mutate()} variant="outline">
-        <LogOut className="size-4" />
-        Logout
-      </Button>
     </header>
   );
 }

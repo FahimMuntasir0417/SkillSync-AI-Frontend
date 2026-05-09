@@ -1,12 +1,5 @@
-﻿import { DashboardWorkspacePage } from "@/app/(dashboardLayout)/_components/dashboard-workspace-page";
+import { PendingSubmissionsView } from "@/app/(dashboardLayout)/_components/dashboard-resource-views";
 
 export default function Page() {
-  return (
-    <DashboardWorkspacePage
-      eyebrow="Instructor"
-      title="Submission reviews"
-      description="Review pending student submissions."
-      actions={[{ href: "/instructor/dashboard/assignments", label: "Assignments" }]}
-    />
-  );
+  return <PendingSubmissionsView />;
 }

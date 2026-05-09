@@ -1,12 +1,5 @@
-﻿import { DashboardWorkspacePage } from "@/app/(dashboardLayout)/_components/dashboard-workspace-page";
+import { BlogsManagementView } from "@/app/(dashboardLayout)/_components/dashboard-resource-views";
 
 export default function Page() {
-  return (
-    <DashboardWorkspacePage
-      eyebrow="Admin"
-      title="Blog management"
-      description="Manage public blog content and publishing state."
-      actions={[{ href: "/blogs", label: "Blogs" }]}
-    />
-  );
+  return <BlogsManagementView />;
 }
