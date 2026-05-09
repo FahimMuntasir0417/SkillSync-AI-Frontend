@@ -1,10 +1,15 @@
+"use client";
+
 import { Clock, FolderPlus } from "lucide-react";
+import { useState } from "react";
+import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { EmptyState, ErrorState } from "@/components/ui/empty-state";
 import { Skeleton } from "@/components/ui/skeleton";
 import { getApiErrorMessage } from "@/lib/api-error";
+import { saveRoadmapLocally } from "../services/roadmap.service";
 import type { RoadmapResult as RoadmapResultType } from "../services/roadmap.service";
 
 type RoadmapResultProps = {
@@ -38,6 +43,8 @@ function getPhaseDuration(phase: NonNullable<RoadmapResultType["phases"]>[number
 }
 
 export function RoadmapResult({ error, isLoading, result }: RoadmapResultProps) {
+  const [saved, setSaved] = useState(false);
+
   if (isLoading) {
     return (
       <Card>
@@ -61,6 +68,16 @@ export function RoadmapResult({ error, isLoading, result }: RoadmapResultProps) 
   if (!result) {
     return <EmptyState title="No roadmap yet" description="Generate a roadmap to see phases, skills, projects, and timeline." />;
   }
+
+  const handleSave = () => {
+    try {
+      saveRoadmapLocally(result);
+      setSaved(true);
+      toast.success("Roadmap saved");
+    } catch {
+      toast.error("Unable to save roadmap");
+    }
+  };
 
   return (
     <Card>
@@ -105,9 +122,9 @@ export function RoadmapResult({ error, isLoading, result }: RoadmapResultProps) 
         {!result.phases?.length ? (
           <pre className="overflow-auto rounded-card bg-muted p-4 text-xs">{JSON.stringify(result, null, 2)}</pre>
         ) : null}
-        <Button type="button" variant="outline">
+        <Button disabled={saved} onClick={handleSave} type="button" variant="outline">
           <FolderPlus className="size-4" />
-          Save roadmap
+          {saved ? "Saved" : "Save roadmap"}
         </Button>
       </div>
     </Card>

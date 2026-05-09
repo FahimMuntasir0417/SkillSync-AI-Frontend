@@ -26,7 +26,13 @@ import {
 const mainRoutes = [
   { href: "/courses", label: "Course" },
   { href: "/blogs", label: "Blog" },
-  { href: "/ai", label: "AI Tools" },
+];
+
+const aiRoutes = [
+  { href: "/ai", label: "Roadmap Generator" },
+  { href: "/course-summary", label: "Course Summary" },
+  { href: "/recommendations", label: "Recommendations" },
+  { href: "/career-chat", label: "Career Chat" },
 ];
 
 const exploreRoutes = [
@@ -86,6 +92,7 @@ const roleLabels: Record<UserRole, string> = {
 
 export function SiteHeader() {
   const [open, setOpen] = useState(false);
+  const [aiOpen, setAiOpen] = useState(false);
   const [exploreOpen, setExploreOpen] = useState(false);
   const [profileOpen, setProfileOpen] = useState(false);
   const [authenticated, setAuthenticated] = useState(false);
@@ -109,6 +116,7 @@ export function SiteHeader() {
 
   const closeMenus = () => {
     setOpen(false);
+    setAiOpen(false);
     setExploreOpen(false);
     setProfileOpen(false);
   };
@@ -141,7 +149,37 @@ export function SiteHeader() {
           <div className="relative">
             <button
               className="flex items-center gap-1 rounded-card px-3 py-2 text-sm font-semibold text-muted-foreground transition hover:bg-muted hover:text-foreground"
-              onClick={() => setExploreOpen((value) => !value)}
+              onClick={() => {
+                setAiOpen((value) => !value);
+                setExploreOpen(false);
+              }}
+              type="button"
+            >
+              AI Tools
+              <ChevronDown className="size-4" />
+            </button>
+            {aiOpen ? (
+              <div className="card absolute left-0 mt-2 w-56 overflow-hidden p-2">
+                {aiRoutes.map((route) => (
+                  <Link
+                    className="block rounded-card px-3 py-2 text-sm hover:bg-muted"
+                    href={route.href}
+                    key={route.href}
+                    onClick={() => setAiOpen(false)}
+                  >
+                    {route.label}
+                  </Link>
+                ))}
+              </div>
+            ) : null}
+          </div>
+          <div className="relative">
+            <button
+              className="flex items-center gap-1 rounded-card px-3 py-2 text-sm font-semibold text-muted-foreground transition hover:bg-muted hover:text-foreground"
+              onClick={() => {
+                setExploreOpen((value) => !value);
+                setAiOpen(false);
+              }}
               type="button"
             >
               Explore
@@ -266,6 +304,21 @@ export function SiteHeader() {
                 {route.label}
               </Link>
             ))}
+            <div className="grid gap-1 rounded-card border border-border p-2">
+              <p className="px-2 py-1 text-xs font-bold uppercase tracking-[0.14em] text-muted-foreground">
+                AI Tools
+              </p>
+              {aiRoutes.map((route) => (
+                <Link
+                  className="rounded-card px-3 py-2 text-sm font-semibold hover:bg-muted"
+                  href={route.href}
+                  key={route.href}
+                  onClick={() => setOpen(false)}
+                >
+                  {route.label}
+                </Link>
+              ))}
+            </div>
             <div className="grid gap-1 rounded-card border border-border p-2">
               <p className="px-2 py-1 text-xs font-bold uppercase tracking-[0.14em] text-muted-foreground">
                 Explore

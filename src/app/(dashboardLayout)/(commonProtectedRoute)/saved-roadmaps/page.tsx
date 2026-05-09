@@ -1,43 +1,89 @@
 "use client";
 
 import { CalendarDays, Filter, MoreHorizontal, Route, Search } from "lucide-react";
-import { useMemo, useState } from "react";
+import { useMemo, useState, useSyncExternalStore } from "react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { EmptyState } from "@/components/ui/empty-state";
 import { Input } from "@/components/ui/input";
 import { PageHeader } from "@/components/ui/page-header";
+import { getSavedRoadmaps, type SavedRoadmap } from "@/features/roadmap/services/roadmap.service";
 
-const savedRoadmaps = [
+const sampleRoadmaps: SavedRoadmap[] = [
   {
+    id: "sample-frontend",
     title: "Frontend Engineer Career Track",
     timeline: "12 weeks",
-    updatedAt: "Updated today",
+    updatedAt: new Date().toISOString(),
     status: "In progress",
     progress: 64,
     focus: "React, TypeScript, Testing",
+    roadmap: {},
   },
   {
+    id: "sample-ai-product",
     title: "AI Product Builder Path",
     timeline: "16 weeks",
-    updatedAt: "Updated yesterday",
+    updatedAt: new Date(Date.now() - 86_400_000).toISOString(),
     status: "Draft",
     progress: 28,
     focus: "Next.js, APIs, Product thinking",
+    roadmap: {},
   },
   {
+    id: "sample-backend",
     title: "Backend API Mastery",
     timeline: "10 weeks",
-    updatedAt: "Updated 4 days ago",
+    updatedAt: new Date(Date.now() - 345_600_000).toISOString(),
     status: "Review",
     progress: 82,
     focus: "Node.js, Prisma, PostgreSQL",
+    roadmap: {},
   },
 ];
 
+let cachedSavedRoadmapsKey = "";
+let cachedSavedRoadmapsSnapshot = sampleRoadmaps;
+
+function formatUpdatedAt(value: string) {
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) {
+    return value;
+  }
+
+  const days = Math.floor((Date.now() - date.getTime()) / 86_400_000);
+
+  if (days <= 0) return "Saved today";
+  if (days === 1) return "Saved yesterday";
+  return `Saved ${days} days ago`;
+}
+
+function subscribeToSavedRoadmaps(onStoreChange: () => void) {
+  window.addEventListener("storage", onStoreChange);
+  return () => window.removeEventListener("storage", onStoreChange);
+}
+
+function getSavedRoadmapsSnapshot() {
+  const localRoadmaps = getSavedRoadmaps();
+  const snapshotKey = JSON.stringify(localRoadmaps);
+
+  if (snapshotKey !== cachedSavedRoadmapsKey) {
+    cachedSavedRoadmapsKey = snapshotKey;
+    cachedSavedRoadmapsSnapshot = [...localRoadmaps, ...sampleRoadmaps];
+  }
+
+  return cachedSavedRoadmapsSnapshot;
+}
+
 export default function SavedRoadmapsPage() {
   const [search, setSearch] = useState("");
+  const savedRoadmaps = useSyncExternalStore(
+    subscribeToSavedRoadmaps,
+    getSavedRoadmapsSnapshot,
+    () => sampleRoadmaps,
+  );
+
   const visibleRoadmaps = useMemo(() => {
     const normalized = search.trim().toLowerCase();
     if (!normalized) return savedRoadmaps;
@@ -45,7 +91,7 @@ export default function SavedRoadmapsPage() {
     return savedRoadmaps.filter((roadmap) =>
       `${roadmap.title} ${roadmap.focus} ${roadmap.status}`.toLowerCase().includes(normalized),
     );
-  }, [search]);
+  }, [savedRoadmaps, search]);
 
   return (
     <main className="grid gap-6 p-4 md:p-8">
@@ -68,7 +114,7 @@ export default function SavedRoadmapsPage() {
       {visibleRoadmaps.length ? (
         <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
           {visibleRoadmaps.map((roadmap) => (
-            <Card className="grid h-full gap-5" interactive key={roadmap.title}>
+            <Card className="grid h-full gap-5" interactive key={roadmap.id}>
               <CardHeader className="mb-0 p-0">
                 <div className="flex items-start justify-between gap-3">
                   <div className="grid size-12 place-items-center rounded-2xl bg-primary/10 text-primary">
@@ -93,7 +139,7 @@ export default function SavedRoadmapsPage() {
                   <CalendarDays className="size-4 text-primary" />
                   {roadmap.timeline}
                 </p>
-                <p>{roadmap.updatedAt}</p>
+                <p>{formatUpdatedAt(roadmap.updatedAt)}</p>
               </div>
               <div className="grid grid-cols-2 gap-2">
                 <Button asChild href="/roadmap-generator" variant="outline">View</Button>

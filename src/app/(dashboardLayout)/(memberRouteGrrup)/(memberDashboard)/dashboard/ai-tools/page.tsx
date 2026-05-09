@@ -1,9 +1,27 @@
-import { Bot, BrainCircuit, MessageSquareText, Route, WandSparkles } from "lucide-react";
+import { Bot, BookOpen, BrainCircuit, ClipboardList, MessageSquareText, Newspaper, Route, WandSparkles } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardDescription, CardTitle } from "@/components/ui/card";
 import { PageHeader } from "@/components/ui/page-header";
 
 const tools = [
+  {
+    href: "/course-summary",
+    title: "Course Summary",
+    description: "Summarize a course by ID with the backend AI summary endpoint.",
+    icon: BookOpen,
+  },
+  {
+    href: "/study-chat",
+    title: "Study Assistant",
+    description: "Ask course or lesson-specific study questions with optional IDs.",
+    icon: MessageSquareText,
+  },
+  {
+    href: "/recommendations",
+    title: "Recommendations",
+    description: "Get general learning recommendations from an optional interest.",
+    icon: WandSparkles,
+  },
   {
     href: "/roadmap-generator",
     title: "Roadmap Generator",
@@ -27,6 +45,24 @@ const tools = [
     title: "AI Chat Assistant",
     description: "Ask learning, roadmap, and project questions inside the dashboard.",
     icon: MessageSquareText,
+  },
+  {
+    href: "/career-chat",
+    title: "Career Chat",
+    description: "Ask career questions with goal, level, and current skills context.",
+    icon: Bot,
+  },
+  {
+    href: "/assignment-feedback",
+    title: "Assignment Feedback",
+    description: "Generate feedback from submission links, notes, or submission ID.",
+    icon: ClipboardList,
+  },
+  {
+    href: "/blog-generator",
+    title: "Blog Generator",
+    description: "Create a blog draft for a topic, tone, and audience.",
+    icon: Newspaper,
   },
 ];
 
