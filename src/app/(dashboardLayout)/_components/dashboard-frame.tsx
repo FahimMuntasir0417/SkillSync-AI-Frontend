@@ -1,12 +1,12 @@
 "use client";
 
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useState, useSyncExternalStore } from "react";
 import { DashboardHeader } from "@/components/layout/dashboard-header";
 import { DashboardSidebar } from "@/components/layout/dashboard-sidebar";
 import { MobileSidebar } from "@/components/layout/mobile-sidebar";
 import { useAuthStore } from "@/features/auth/store/auth-store";
-import { normalizeUserRole, type UserRole } from "@/lib/authUtils";
+import { getDefaultDashboardRoute, normalizeUserRole, type UserRole } from "@/lib/authUtils";
 
 type DashboardFrameProps = {
   children: React.ReactNode;
@@ -31,6 +31,7 @@ function readRoleFromToken(token: string | null): UserRole | null {
 
 export function DashboardFrame({ children }: DashboardFrameProps) {
   const router = useRouter();
+  const pathname = usePathname();
   const mounted = useSyncExternalStore(
     subscribeToHydration,
     getClientHydrationSnapshot,
@@ -44,7 +45,18 @@ export function DashboardFrame({ children }: DashboardFrameProps) {
     (typeof window !== "undefined"
       ? localStorage.getItem("accessToken") || localStorage.getItem("skillsync_access_token")
       : null);
-  const role = normalizeUserRole(storedRole ?? readRoleFromToken(token));
+  const pathRole = pathname.startsWith("/admin")
+    ? "ADMIN"
+    : pathname.startsWith("/instructor")
+      ? "INSTRUCTOR"
+      : pathname.startsWith("/dashboard")
+        ? "STUDENT"
+        : null;
+  const role = normalizeUserRole(readRoleFromToken(token) ?? storedRole);
+  const routeRoleMatches =
+    !pathRole ||
+    pathRole === role ||
+    ((role === "ADMIN" || role === "SUPER_ADMIN") && pathRole === "ADMIN");
   const hasToken =
     Boolean(accessToken) ||
     (typeof window !== "undefined" &&
@@ -53,10 +65,15 @@ export function DashboardFrame({ children }: DashboardFrameProps) {
   useEffect(() => {
     if (mounted && !hasToken) {
       router.replace("/login");
+      return;
     }
-  }, [hasToken, mounted, router]);
 
-  if (!mounted || !hasToken) {
+    if (mounted && hasToken && !routeRoleMatches) {
+      router.replace(getDefaultDashboardRoute(role));
+    }
+  }, [hasToken, mounted, role, routeRoleMatches, router]);
+
+  if (!mounted || !hasToken || !routeRoleMatches) {
     return <div className="grid min-h-screen place-items-center text-sm text-muted-foreground">Checking session...</div>;
   }
 
@@ -65,7 +82,7 @@ export function DashboardFrame({ children }: DashboardFrameProps) {
       <DashboardSidebar role={role} />
       <MobileSidebar onClose={() => setMobileOpen(false)} open={mobileOpen} role={role} />
       <div className="min-w-0 bg-background/70">
-        <DashboardHeader onMenuClick={() => setMobileOpen(true)} />
+        <DashboardHeader onMenuClick={() => setMobileOpen(true)} role={role} />
         {children}
       </div>
     </div>

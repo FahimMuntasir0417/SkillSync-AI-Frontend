@@ -63,6 +63,12 @@ export function DashboardSidebar({ className, onNavigate, role }: DashboardSideb
   const pathname = usePathname();
   const navSections = getNavItemsByRole(role);
   const defaultDashboard = getDefaultDashboardRoute(role);
+  const workspaceTitle =
+    role === "ADMIN" || role === "SUPER_ADMIN"
+      ? "Admin workspace"
+      : role === "INSTRUCTOR"
+        ? "Instructor workspace"
+        : "Student workspace";
 
   return (
     <aside className={cn("hidden min-h-screen border-r border-border bg-surface/86 p-4 backdrop-blur-xl lg:block", className)}>
@@ -103,7 +109,7 @@ export function DashboardSidebar({ className, onNavigate, role }: DashboardSideb
       <div className="mt-6 rounded-card border border-border bg-muted/60 p-4">
         <div className="flex items-center gap-3">
           <MessageSquareText className="size-5 text-primary" />
-          <p className="text-sm font-bold">AI workspace</p>
+          <p className="text-sm font-bold">{workspaceTitle}</p>
         </div>
         <p className="mt-2 text-xs leading-5 text-muted-foreground">
           Generate roadmaps, compare skills, and ask for learning support from one dashboard.

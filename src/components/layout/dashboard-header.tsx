@@ -3,13 +3,25 @@
 import { Bell, ChevronDown, LogOut, Menu, Search, UserRound } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useLogout } from "@/features/auth/hooks/use-logout";
+import { useAuthStore } from "@/features/auth/store/auth-store";
+import type { UserRole } from "@/lib/authUtils";
 
 type DashboardHeaderProps = {
   onMenuClick?: () => void;
+  role: UserRole;
 };
 
-export function DashboardHeader({ onMenuClick }: DashboardHeaderProps) {
+const roleLabels: Record<UserRole, string> = {
+  ADMIN: "Admin",
+  INSTRUCTOR: "Instructor",
+  STUDENT: "Learner",
+  SUPER_ADMIN: "Super admin",
+};
+
+export function DashboardHeader({ onMenuClick, role }: DashboardHeaderProps) {
   const logoutMutation = useLogout();
+  const user = useAuthStore((state) => state.user);
+  const label = roleLabels[role];
 
   return (
     <header className="sticky top-0 z-30 border-b border-border bg-background/82 px-4 backdrop-blur-xl">
@@ -32,8 +44,8 @@ export function DashboardHeader({ onMenuClick }: DashboardHeaderProps) {
               <UserRound className="size-4" />
             </span>
             <div className="text-left">
-              <p className="text-sm font-bold">Learner</p>
-              <p className="text-xs text-muted-foreground">Dashboard</p>
+              <p className="text-sm font-bold">{user?.name || label}</p>
+              <p className="text-xs text-muted-foreground">{label} dashboard</p>
             </div>
             <ChevronDown className="size-4 text-muted-foreground" />
           </div>

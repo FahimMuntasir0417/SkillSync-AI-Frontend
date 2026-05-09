@@ -1,0 +1,11 @@
+▲ Next.js 16.2.1 (Turbopack)
+- Local:         http://localhost:3000
+- Network:       http://192.168.1.103:3000
+- Environments: .env
+✓ Ready in 1084ms
+Creating turbopack project {
+  dir: "E:\\SkillSync AI Frontend",
+  testMode: true,
+}
+
+○ Compiling /admin/dashboard ...
