@@ -1,4 +1,4 @@
-# SkillSync AI Frontend
+# SkillSync AI
 
 The polished web experience for **SkillSync AI**, an AI-powered learning management platform that connects course discovery, learning progress, role-based dashboards, support, notifications, instructor promotion requests, and real AI learning workflows.
 
@@ -193,16 +193,16 @@ NEXT_PUBLIC_API_BASE_URL
 
 Important backend route groups:
 
-| Feature | Routes |
-| --- | --- |
-| Auth | `/auth/login`, `/auth/register`, `/auth/me`, `/auth/logout`, `/auth/refresh-token` |
-| Courses | `/courses`, `/courses/:slug`, `/courses/featured`, `/courses/related/:courseId` |
-| Enrollments | `/enrollments/:courseId`, `/enrollments/my-classes` |
-| Dashboard | `/dashboard/student`, `/dashboard/instructor`, `/dashboard/admin` |
-| Support | `/support/tickets` |
-| Notifications | `/notifications`, `/notifications/unread-count` |
-| Promotion Requests | `/promotion-requests` |
-| AI | `/ai/roadmap`, `/ai/skill-gap`, `/ai/project-recommendations`, `/ai/chat`, and related AI endpoints |
+| Feature            | Routes                                                                                              |
+| ------------------ | --------------------------------------------------------------------------------------------------- |
+| Auth               | `/auth/login`, `/auth/register`, `/auth/me`, `/auth/logout`, `/auth/refresh-token`                  |
+| Courses            | `/courses`, `/courses/:slug`, `/courses/featured`, `/courses/related/:courseId`                     |
+| Enrollments        | `/enrollments/:courseId`, `/enrollments/my-classes`                                                 |
+| Dashboard          | `/dashboard/student`, `/dashboard/instructor`, `/dashboard/admin`                                   |
+| Support            | `/support/tickets`                                                                                  |
+| Notifications      | `/notifications`, `/notifications/unread-count`                                                     |
+| Promotion Requests | `/promotion-requests`                                                                               |
+| AI                 | `/ai/roadmap`, `/ai/skill-gap`, `/ai/project-recommendations`, `/ai/chat`, and related AI endpoints |
 
 ### Frontend Architecture Highlights
 
@@ -236,17 +236,17 @@ User action
 - Backend Repo: https://github.com/FahimMuntasir0417/SkillSync-AI-Backend
 - Frontend Live: https://skill-sync-ai-frontend.vercel.app/
 - Backend Live: https://skill-sync-ai-backend.vercel.app/
-- Demo Video: Add final Google Drive walkthrough link after recording
+- Demo Video: https://drive.google.com/file/d/1emZQGxEL78LvL4-J-XpppBt8SJ6slVTa/view?usp=sharing
 
 ### Demo Credentials
 
 Use demo credentials only for non-production demonstrations.
 
-| Role | Email | Password |
-| --- | --- | --- |
-| Student | `student@skillsync.ai` | `DEMO_STUDENT_PASSWORD` |
-| Instructor | `instructor@skillsync.ai` | `DEMO_INSTRUCTOR_PASSWORD` |
-| Admin | `admin@skillsync.ai` | `DEMO_ADMIN_PASSWORD` |
+| Role       | Email                     | Password         |
+| ---------- | ------------------------- | ---------------- |
+| Student    | `student@skillsync.ai`    | `Student@123`    |
+| Instructor | `instructor@skillsync.ai` | `Instructor@123` |
+| Admin      | `admin@skillsync.ai`      | `Admin@123`      |
 
 ## Quality Signals
 
@@ -298,14 +298,14 @@ SkillSync AI Frontend/
 
 ## Available Scripts
 
-| Command | Description |
-| --- | --- |
-| `bun run dev` | Run the Next.js development server |
-| `bun run build` | Build the production app |
-| `bun run start` | Start the production server |
-| `bun run lint` | Run ESLint |
-| `bun run typecheck` | Run TypeScript compile check |
-| `bun run check` | Run typecheck, lint, and build |
+| Command             | Description                        |
+| ------------------- | ---------------------------------- |
+| `bun run dev`       | Run the Next.js development server |
+| `bun run build`     | Build the production app           |
+| `bun run start`     | Start the production server        |
+| `bun run lint`      | Run ESLint                         |
+| `bun run typecheck` | Run TypeScript compile check       |
+| `bun run check`     | Run typecheck, lint, and build     |
 
 ## Contact
 
