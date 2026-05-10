@@ -12,14 +12,29 @@ type CourseExplorerProps = {
   courses: Course[];
   categories: Category[];
   error?: string;
+  initialCategory?: string;
 };
 
 const pageSize = 8;
 
-export function CourseExplorer({ courses, categories, error }: CourseExplorerProps) {
+const getCategoryIdFromSlug = (categories: Category[], initialCategory?: string) => {
+  if (!initialCategory) return "";
+
+  const normalized = initialCategory.toLowerCase();
+  const matchedCategory = categories.find(
+    (category) =>
+      category.id.toLowerCase() === normalized ||
+      category.slug.toLowerCase() === normalized ||
+      category.name.toLowerCase() === normalized,
+  );
+
+  return matchedCategory?.id ?? "";
+};
+
+export function CourseExplorer({ courses, categories, error, initialCategory }: CourseExplorerProps) {
   const [search, setSearch] = useState("");
   const [debouncedSearch, setDebouncedSearch] = useState("");
-  const [categoryId, setCategoryId] = useState("");
+  const [categoryId, setCategoryId] = useState(() => getCategoryIdFromSlug(categories, initialCategory));
   const [level, setLevel] = useState("");
   const [maxPrice, setMaxPrice] = useState("");
   const [sort, setSort] = useState("createdAt-desc");
@@ -60,7 +75,8 @@ export function CourseExplorer({ courses, categories, error }: CourseExplorerPro
   }, [categoryId, courses, debouncedSearch, level, maxPrice, sort]);
 
   const totalPages = Math.max(1, Math.ceil(filtered.length / pageSize));
-  const visible = filtered.slice((page - 1) * pageSize, page * pageSize);
+  const currentPage = Math.min(page, totalPages);
+  const visible = filtered.slice((currentPage - 1) * pageSize, currentPage * pageSize);
 
   return (
     <div className="space-y-8">
@@ -74,7 +90,14 @@ export function CourseExplorer({ courses, categories, error }: CourseExplorerPro
             value={search}
           />
         </label>
-        <select className="focus-ring h-11 rounded-card border border-border bg-background px-3 text-sm" onChange={(event) => setCategoryId(event.target.value)} value={categoryId}>
+        <select
+          className="focus-ring h-11 rounded-card border border-border bg-background px-3 text-sm"
+          onChange={(event) => {
+            setCategoryId(event.target.value);
+            setPage(1);
+          }}
+          value={categoryId}
+        >
           <option value="">All categories</option>
           {categories.map((category) => (
             <option key={category.id} value={category.id}>
@@ -82,19 +105,40 @@ export function CourseExplorer({ courses, categories, error }: CourseExplorerPro
             </option>
           ))}
         </select>
-        <select className="focus-ring h-11 rounded-card border border-border bg-background px-3 text-sm" onChange={(event) => setLevel(event.target.value)} value={level}>
+        <select
+          className="focus-ring h-11 rounded-card border border-border bg-background px-3 text-sm"
+          onChange={(event) => {
+            setLevel(event.target.value);
+            setPage(1);
+          }}
+          value={level}
+        >
           <option value="">All levels</option>
           <option value="BEGINNER">Beginner</option>
           <option value="INTERMEDIATE">Intermediate</option>
           <option value="ADVANCED">Advanced</option>
         </select>
-        <select className="focus-ring h-11 rounded-card border border-border bg-background px-3 text-sm" onChange={(event) => setMaxPrice(event.target.value)} value={maxPrice}>
+        <select
+          className="focus-ring h-11 rounded-card border border-border bg-background px-3 text-sm"
+          onChange={(event) => {
+            setMaxPrice(event.target.value);
+            setPage(1);
+          }}
+          value={maxPrice}
+        >
           <option value="">Any price</option>
           <option value="30">Up to $30</option>
           <option value="50">Up to $50</option>
           <option value="80">Up to $80</option>
         </select>
-        <select className="focus-ring h-11 rounded-card border border-border bg-background px-3 text-sm" onChange={(event) => setSort(event.target.value)} value={sort}>
+        <select
+          className="focus-ring h-11 rounded-card border border-border bg-background px-3 text-sm"
+          onChange={(event) => {
+            setSort(event.target.value);
+            setPage(1);
+          }}
+          value={sort}
+        >
           <option value="createdAt-desc">Newest</option>
           <option value="price-asc">Price low to high</option>
           <option value="price-desc">Price high to low</option>
@@ -124,13 +168,13 @@ export function CourseExplorer({ courses, categories, error }: CourseExplorerPro
           Showing {visible.length} of {filtered.length} courses
         </p>
         <div className="flex items-center gap-2">
-          <Button disabled={page <= 1} onClick={() => setPage((value) => value - 1)} variant="outline">
+          <Button disabled={currentPage <= 1} onClick={() => setPage((value) => value - 1)} variant="outline">
             Previous
           </Button>
           <span className="text-sm font-semibold">
-            Page {page} of {totalPages}
+            Page {currentPage} of {totalPages}
           </span>
-          <Button disabled={page >= totalPages} onClick={() => setPage((value) => value + 1)} variant="outline">
+          <Button disabled={currentPage >= totalPages} onClick={() => setPage((value) => value + 1)} variant="outline">
             Next
           </Button>
         </div>

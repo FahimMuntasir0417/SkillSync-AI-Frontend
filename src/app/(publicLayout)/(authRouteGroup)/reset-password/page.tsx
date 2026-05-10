@@ -2,7 +2,7 @@
 
 import { Loader2 } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { z } from "zod";
 import { Button } from "@/components/ui/button";
 import { StatusMessage } from "@/components/ui/status";
@@ -17,26 +17,30 @@ const schema = z.object({
 const pendingResetEmailKey = "skillsync_pending_reset_email";
 const resetNoticeKey = "skillsync_reset_notice";
 
+const getInitialResetState = () => {
+  if (typeof window === "undefined") {
+    return {
+      email: "",
+      notice: null as string | null,
+    };
+  }
+
+  const searchParams = new URLSearchParams(window.location.search);
+  const notice = window.sessionStorage.getItem(resetNoticeKey);
+  window.sessionStorage.removeItem(resetNoticeKey);
+
+  return {
+    email: searchParams.get("email") || window.localStorage.getItem(pendingResetEmailKey) || "",
+    notice,
+  };
+};
+
 export default function ResetPasswordPage() {
   const router = useRouter();
-  const [form, setForm] = useState({ email: "", otp: "", newPassword: "" });
-  const [message, setMessage] = useState<string | null>(null);
+  const [initialState] = useState(getInitialResetState);
+  const [form, setForm] = useState(() => ({ email: initialState.email, otp: "", newPassword: "" }));
+  const [message, setMessage] = useState<string | null>(initialState.notice);
   const [loading, setLoading] = useState(false);
-
-  useEffect(() => {
-    const searchParams = new URLSearchParams(window.location.search);
-    const email = searchParams.get("email") || window.localStorage.getItem(pendingResetEmailKey) || "";
-    const notice = window.sessionStorage.getItem(resetNoticeKey);
-
-    if (email) {
-      setForm((state) => ({ ...state, email }));
-    }
-
-    if (notice) {
-      setMessage(notice);
-      window.sessionStorage.removeItem(resetNoticeKey);
-    }
-  }, []);
 
   const submit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();

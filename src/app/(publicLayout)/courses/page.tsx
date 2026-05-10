@@ -2,7 +2,16 @@ import { CourseExplorer } from "@/components/courses/course-explorer";
 import { SectionHeading } from "@/components/ui/section-heading";
 import { publicApi } from "@/lib/api/skillsync";
 
-export default async function CoursesPage() {
+type CoursesPageProps = {
+  searchParams?: Promise<Record<string, string | string[] | undefined>>;
+};
+
+export default async function CoursesPage({ searchParams }: CoursesPageProps) {
+  const resolvedSearchParams = await searchParams;
+  const categoryParam = resolvedSearchParams?.category;
+  const initialCategory = Array.isArray(categoryParam)
+    ? categoryParam[0]
+    : categoryParam;
   const [coursesResult, categoriesResult] = await Promise.allSettled([
     publicApi.courses({ limit: 100 }),
     publicApi.categories(),
@@ -23,7 +32,12 @@ export default async function CoursesPage() {
         description="Search, filter, sort, and paginate through the live SkillSync AI course catalog."
       />
       <div className="mt-8">
-        <CourseExplorer categories={categories} courses={courses} error={error} />
+        <CourseExplorer
+          categories={categories}
+          courses={courses}
+          error={error}
+          initialCategory={initialCategory}
+        />
       </div>
     </main>
   );

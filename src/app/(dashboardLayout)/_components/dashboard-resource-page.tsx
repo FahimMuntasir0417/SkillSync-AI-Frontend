@@ -65,6 +65,8 @@ type DashboardResourcePageProps<T> = {
   rowActions?: DashboardRowAction<T>[];
 };
 
+const dashboardPageSize = 5;
+
 function getRows<T>(result: QueryResult<T>): T[] {
   if (Array.isArray(result)) return result;
   return result.data;
@@ -137,6 +139,7 @@ export function DashboardResourcePage<T>({
 }: DashboardResourcePageProps<T>) {
   const queryClient = useQueryClient();
   const [search, setSearch] = useState("");
+  const [page, setPage] = useState(1);
   const [editing, setEditing] = useState<T | null>(null);
   const [creating, setCreating] = useState(false);
   const queryKey = useMemo(() => ["dashboard-resource", eyebrow, title], [eyebrow, title]);
@@ -195,6 +198,13 @@ export function DashboardResourcePage<T>({
 
     return data.filter((row) => getSearchText(row).toLowerCase().includes(normalized));
   }, [data, getSearchText, search]);
+
+  const totalPages = Math.max(1, Math.ceil(visibleRows.length / dashboardPageSize));
+  const currentPage = Math.min(page, totalPages);
+  const startIndex = (currentPage - 1) * dashboardPageSize;
+  const paginatedRows = visibleRows.slice(startIndex, startIndex + dashboardPageSize);
+  const shownStart = visibleRows.length === 0 ? 0 : startIndex + 1;
+  const shownEnd = Math.min(startIndex + dashboardPageSize, visibleRows.length);
 
   const activeForm = creating ? createAction : editing ? updateAction : undefined;
   const activeItem = editing ?? undefined;
@@ -322,12 +332,22 @@ export function DashboardResourcePage<T>({
           <div>
             <CardTitle>{title}</CardTitle>
             <CardDescription>
-              {isFetching ? "Loading live backend data..." : `${visibleRows.length} of ${data.length} records shown`}
+              {isFetching
+                ? "Loading live backend data..."
+                : `${shownStart}-${shownEnd} of ${visibleRows.length} records shown`}
             </CardDescription>
           </div>
           <div className="relative w-full md:max-w-xs">
             <Search className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
-            <Input className="pl-9" onChange={(event) => setSearch(event.target.value)} placeholder="Search records..." value={search} />
+            <Input
+              className="pl-9"
+              onChange={(event) => {
+                setSearch(event.target.value);
+                setPage(1);
+              }}
+              placeholder="Search records..."
+              value={search}
+            />
           </div>
         </CardHeader>
 
@@ -366,7 +386,7 @@ export function DashboardResourcePage<T>({
                         ) : null}
                       </tr>
                     ))
-                  : visibleRows.map((row, index) => (
+                  : paginatedRows.map((row, index) => (
                       <tr className="border-t border-border align-top" key={getRowKey(row, index)}>
                         {columns.map((column) => (
                           <td className={column.className ?? "p-4"} key={column.header}>
@@ -417,9 +437,34 @@ export function DashboardResourcePage<T>({
                           </td>
                         ) : null}
                       </tr>
-                    ))}
+                  ))}
               </tbody>
             </table>
+            {!isFetching && visibleRows.length > dashboardPageSize ? (
+              <div className="flex flex-col gap-3 border-t border-border bg-surface/70 p-4 text-sm text-muted-foreground sm:flex-row sm:items-center sm:justify-between">
+                <span>
+                  Page {currentPage} of {totalPages} - Showing {shownStart}-{shownEnd} of {visibleRows.length}
+                </span>
+                <div className="flex gap-2">
+                  <Button
+                    disabled={currentPage === 1}
+                    onClick={() => setPage((value) => Math.max(1, value - 1))}
+                    size="sm"
+                    variant="outline"
+                  >
+                    Previous
+                  </Button>
+                  <Button
+                    disabled={currentPage === totalPages}
+                    onClick={() => setPage((value) => Math.min(totalPages, value + 1))}
+                    size="sm"
+                    variant="outline"
+                  >
+                    Next
+                  </Button>
+                </div>
+              </div>
+            ) : null}
           </div>
         ) : null}
       </Card>

@@ -13,6 +13,8 @@ import { apiFetch, getStoredToken, type Course } from "@/lib/api/skillsync";
 
 type DashboardRole = "student" | "instructor" | "admin";
 
+const dashboardPageSize = 5;
+
 export function DashboardShell({ role }: { role: DashboardRole }) {
   const [courses, setCourses] = useState<Course[]>([]);
   const [loading, setLoading] = useState(true);
@@ -39,8 +41,9 @@ export function DashboardShell({ role }: { role: DashboardRole }) {
     return courses.filter((course) => !normalized || course.title.toLowerCase().includes(normalized));
   }, [courses, filter]);
 
-  const visible = filteredCourses.slice((page - 1) * 5, page * 5);
-  const totalPages = Math.max(1, Math.ceil(filteredCourses.length / 5));
+  const totalPages = Math.max(1, Math.ceil(filteredCourses.length / dashboardPageSize));
+  const currentPage = Math.min(page, totalPages);
+  const visible = filteredCourses.slice((currentPage - 1) * dashboardPageSize, currentPage * dashboardPageSize);
   const totalLessons = courses.reduce((sum, course) => sum + course.totalLessons, 0);
   const totalEnrollments = courses.reduce((sum, course) => sum + course.totalEnrollments, 0);
   const avgRating = courses.length
@@ -120,10 +123,10 @@ export function DashboardShell({ role }: { role: DashboardRole }) {
             </table>
           </div>
           <div className="flex items-center justify-between border-t border-border p-4">
-            <p className="text-sm text-muted-foreground">Page {page} of {totalPages}</p>
+            <p className="text-sm text-muted-foreground">Page {currentPage} of {totalPages}</p>
             <div className="flex gap-2">
-              <Button disabled={page <= 1} onClick={() => setPage((value) => value - 1)} size="sm" variant="outline">Previous</Button>
-              <Button disabled={page >= totalPages} onClick={() => setPage((value) => value + 1)} size="sm" variant="outline">Next</Button>
+              <Button disabled={currentPage <= 1} onClick={() => setPage((value) => value - 1)} size="sm" variant="outline">Previous</Button>
+              <Button disabled={currentPage >= totalPages} onClick={() => setPage((value) => value + 1)} size="sm" variant="outline">Next</Button>
             </div>
           </div>
         </div>

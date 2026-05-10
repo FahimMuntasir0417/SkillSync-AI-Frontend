@@ -43,6 +43,8 @@ const sampleRoadmaps: SavedRoadmap[] = [
   },
 ];
 
+const savedRoadmapsPageSize = 5;
+
 let cachedSavedRoadmapsKey = "";
 let cachedSavedRoadmapsSnapshot = sampleRoadmaps;
 
@@ -78,6 +80,7 @@ function getSavedRoadmapsSnapshot() {
 
 export default function SavedRoadmapsPage() {
   const [search, setSearch] = useState("");
+  const [page, setPage] = useState(1);
   const savedRoadmaps = useSyncExternalStore(
     subscribeToSavedRoadmaps,
     getSavedRoadmapsSnapshot,
@@ -93,6 +96,13 @@ export default function SavedRoadmapsPage() {
     );
   }, [savedRoadmaps, search]);
 
+  const totalPages = Math.max(1, Math.ceil(visibleRoadmaps.length / savedRoadmapsPageSize));
+  const currentPage = Math.min(page, totalPages);
+  const paginatedRoadmaps = visibleRoadmaps.slice(
+    (currentPage - 1) * savedRoadmapsPageSize,
+    currentPage * savedRoadmapsPageSize,
+  );
+
   return (
     <main className="grid gap-6 p-4 md:p-8">
       <PageHeader
@@ -104,7 +114,15 @@ export default function SavedRoadmapsPage() {
       <Card className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
         <div className="relative w-full md:max-w-md">
           <Search className="absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
-          <Input className="pl-9" onChange={(event) => setSearch(event.target.value)} placeholder="Search saved roadmaps..." value={search} />
+          <Input
+            className="pl-9"
+            onChange={(event) => {
+              setSearch(event.target.value);
+              setPage(1);
+            }}
+            placeholder="Search saved roadmaps..."
+            value={search}
+          />
         </div>
         <Button variant="outline">
           <Filter className="size-4" />
@@ -113,7 +131,7 @@ export default function SavedRoadmapsPage() {
       </Card>
       {visibleRoadmaps.length ? (
         <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
-          {visibleRoadmaps.map((roadmap) => (
+          {paginatedRoadmaps.map((roadmap) => (
             <Card className="grid h-full gap-5" interactive key={roadmap.id}>
               <CardHeader className="mb-0 p-0">
                 <div className="flex items-start justify-between gap-3">
@@ -151,6 +169,21 @@ export default function SavedRoadmapsPage() {
       ) : (
         <EmptyState title="No saved roadmaps" description="Generate and save a roadmap to build your learning history." />
       )}
+      {visibleRoadmaps.length > savedRoadmapsPageSize ? (
+        <Card className="flex flex-col gap-3 text-sm text-muted-foreground sm:flex-row sm:items-center sm:justify-between">
+          <span>
+            Page {currentPage} of {totalPages} - Showing {paginatedRoadmaps.length} of {visibleRoadmaps.length}
+          </span>
+          <div className="flex gap-2">
+            <Button disabled={currentPage <= 1} onClick={() => setPage((value) => Math.max(1, value - 1))} size="sm" variant="outline">
+              Previous
+            </Button>
+            <Button disabled={currentPage >= totalPages} onClick={() => setPage((value) => Math.min(totalPages, value + 1))} size="sm" variant="outline">
+              Next
+            </Button>
+          </div>
+        </Card>
+      ) : null}
       <Card className="flex items-center gap-3 text-sm text-muted-foreground">
         <MoreHorizontal className="size-4 text-primary" />
         Saved roadmap history is displayed locally because the current backend does not expose a roadmap-history endpoint.

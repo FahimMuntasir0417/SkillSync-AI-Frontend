@@ -2,7 +2,7 @@
 
 import { Loader2 } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { z } from "zod";
 import { Button } from "@/components/ui/button";
 import { StatusMessage } from "@/components/ui/status";
@@ -15,20 +15,18 @@ const schema = z.object({
 
 const pendingVerificationEmailKey = "skillsync_pending_verification_email";
 
+const getPendingVerificationEmail = () => {
+  if (typeof window === "undefined") return "";
+
+  const searchParams = new URLSearchParams(window.location.search);
+  return searchParams.get("email") || window.localStorage.getItem(pendingVerificationEmailKey) || "";
+};
+
 export default function VerifyEmailPage() {
   const router = useRouter();
-  const [form, setForm] = useState({ email: "", otp: "" });
+  const [form, setForm] = useState(() => ({ email: getPendingVerificationEmail(), otp: "" }));
   const [message, setMessage] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
-
-  useEffect(() => {
-    const searchParams = new URLSearchParams(window.location.search);
-    const email = searchParams.get("email") || window.localStorage.getItem(pendingVerificationEmailKey) || "";
-
-    if (email) {
-      setForm((state) => ({ ...state, email }));
-    }
-  }, []);
 
   const submit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
