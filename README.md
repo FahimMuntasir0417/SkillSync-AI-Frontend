@@ -100,16 +100,29 @@ SkillSync AI Frontend solves this with a modular Next.js application. Public pag
 
 ## Screenshots / GIFs
 
-Add final deployed screenshots before submission. Recommended file names are included so the README can point to stable assets once captured.
+### Landing page
 
-| Area | Target File |
-| --- | --- |
-| Landing page | `docs/screenshots/landing-page.png` |
-| Course listing with filters | `docs/screenshots/course-listing.png` |
-| Course details | `docs/screenshots/course-details.png` |
-| Student dashboard | `docs/screenshots/student-dashboard.png` |
-| Admin dashboard | `docs/screenshots/admin-dashboard.png` |
-| AI roadmap result | `docs/screenshots/ai-roadmap-result.png` |
+![SkillSync AI landing page with AI tools and account menus](docs/screenshots/landing-page.png)
+
+### Course discovery
+
+![Course catalog with search, category, level, price, and sorting filters](docs/screenshots/course-listing.png)
+
+### Course details
+
+![Course details page with enrollment action, course stats, overview, and modules](docs/screenshots/course-details.png)
+
+### Student dashboard
+
+![Student dashboard with AI workspace navigation, metrics, quick actions, and learning progress](docs/screenshots/student-dashboard.png)
+
+### Admin dashboard
+
+![Admin dashboard with platform metrics, course performance chart, course levels chart, and course table](docs/screenshots/admin-dashboard.png)
+
+### AI roadmap generator
+
+![AI roadmap generator showing a generated full-stack developer roadmap result](docs/screenshots/ai-roadmap-result.png)
 
 ## Setup Instructions
 
