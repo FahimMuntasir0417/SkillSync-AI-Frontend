@@ -844,6 +844,13 @@ export function MyClassesView({ eyebrow = "Common workspace", title = "My classe
       }}
       rowActions={[
         {
+          label: "Start learning",
+          variant: "primary",
+          run: async (enrollment) => {
+            window.location.assign(`/learn/${enrollment.id}`);
+          },
+        },
+        {
           label: "Details",
           run: async (enrollment) => {
             const result = await enrollmentApi.byId(enrollment.id);

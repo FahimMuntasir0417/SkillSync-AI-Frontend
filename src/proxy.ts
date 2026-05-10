@@ -26,6 +26,7 @@ const PROTECTED_PREFIXES = [
   "/notifications",
   "/promotion-requests",
   "/change-password",
+  "/learn",
 ];
 
 function isProtectedPath(pathname: string) {
