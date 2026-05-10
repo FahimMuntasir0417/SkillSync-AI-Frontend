@@ -22,6 +22,8 @@ import {
   courseReviewApi,
   enrollmentApi,
   lessonApi,
+  notificationApi,
+  promotionRequestApi,
   publicApi,
   reviewApi,
   submissionApi,
@@ -37,6 +39,8 @@ import {
   type CourseReview,
   type Enrollment,
   type Lesson,
+  type Notification,
+  type PromotionRequest,
   type Submission,
   type SupportTicket,
 } from "@/lib/api/skillsync";
@@ -96,6 +100,16 @@ const ticketStatusOptions = [
   { label: "In progress", value: "IN_PROGRESS" },
   { label: "Resolved", value: "RESOLVED" },
   { label: "Closed", value: "CLOSED" },
+];
+
+const notificationTypeOptions = [
+  { label: "Enrollment", value: "ENROLLMENT" },
+  { label: "Assignment", value: "ASSIGNMENT" },
+  { label: "Submission", value: "SUBMISSION" },
+  { label: "Review", value: "REVIEW" },
+  { label: "Support", value: "SUPPORT" },
+  { label: "AI", value: "AI" },
+  { label: "System", value: "SYSTEM" },
 ];
 
 const roleOptions = [
@@ -225,6 +239,23 @@ const reviewColumns: DashboardColumn<CourseReview>[] = [
   { header: "Created", cell: (review) => <MutedCell>{date(review.createdAt)}</MutedCell> },
 ];
 
+const notificationColumns: DashboardColumn<Notification>[] = [
+  { header: "Title", cell: (notification) => <TextCell>{notification.title}</TextCell> },
+  { header: "Message", cell: (notification) => <MutedCell>{notification.message}</MutedCell> },
+  { header: "Type", cell: (notification) => <StatusBadge>{notification.type}</StatusBadge> },
+  { header: "Status", cell: (notification) => <StatusBadge>{notification.isRead ? "Read" : "Unread"}</StatusBadge> },
+  { header: "Created", cell: (notification) => <MutedCell>{date(notification.createdAt)}</MutedCell> },
+];
+
+const promotionRequestColumns: DashboardColumn<PromotionRequest>[] = [
+  { header: "Requester", cell: (request) => <TextCell>{request.user?.name ?? request.userId}</TextCell> },
+  { header: "Email", cell: (request) => <MutedCell>{request.user?.email}</MutedCell> },
+  { header: "Status", cell: (request) => <StatusBadge>{request.status}</StatusBadge> },
+  { header: "Message", cell: (request) => <MutedCell>{request.message}</MutedCell> },
+  { header: "Feedback", cell: (request) => <MutedCell>{request.adminFeedback}</MutedCell> },
+  { header: "Requested", cell: (request) => <MutedCell>{date(request.createdAt)}</MutedCell> },
+];
+
 const moduleColumns: DashboardColumn<ModuleRow>[] = [
   { header: "Module", cell: (moduleItem) => <TextCell>{moduleItem.title}</TextCell> },
   { header: "Course", cell: (moduleItem) => <MutedCell>{moduleItem.courseTitle ?? moduleItem.course?.title}</MutedCell> },
@@ -347,6 +378,23 @@ const ticketCreateFields: DashboardField<SupportTicket>[] = [
   { name: "subject", label: "Subject", required: true },
   { name: "message", label: "Message", required: true, type: "textarea" },
   { name: "priority", label: "Priority", type: "select", options: ticketPriorityOptions },
+];
+
+const notificationCreateFields: DashboardField<Notification>[] = [
+  { name: "userId", label: "User ID", required: true },
+  { name: "title", label: "Title", required: true },
+  { name: "message", label: "Message", required: true, type: "textarea" },
+  { name: "type", label: "Type", required: true, type: "select", options: notificationTypeOptions },
+];
+
+const promotionRequestCreateFields: DashboardField<PromotionRequest>[] = [
+  {
+    name: "message",
+    label: "Message",
+    required: true,
+    type: "textarea",
+    placeholder: "Share why you want instructor access.",
+  },
 ];
 
 function submissionCreateAction(assignmentOptions: { label: string; value: string }[] = [], assignmentId?: string): DashboardCrudAction<Submission> {
@@ -504,6 +552,104 @@ export function SupportManagementView({ eyebrow = "Common workspace", title = "S
             return message ? supportApi.createReply(ticket.id, message) : Promise.resolve();
           },
         },
+      ]}
+    />
+  );
+}
+
+export function NotificationsView({ eyebrow = "Common workspace", title = "Notifications", admin = false }: { eyebrow?: string; title?: string; admin?: boolean }) {
+  return (
+    <DashboardResourcePage
+      eyebrow={eyebrow}
+      title={title}
+      description="Review in-app notifications and manage read state."
+      query={() => notificationApi.list({ limit: 100 })}
+      columns={notificationColumns}
+      getRowKey={(notification) => notification.id}
+      getSearchText={(notification) => `${notification.title} ${notification.message} ${notification.type}`}
+      createAction={
+        admin
+          ? {
+              label: "Create notification",
+              fields: notificationCreateFields,
+              mutation: (payload) => notificationApi.create(payload as Parameters<typeof notificationApi.create>[0]),
+            }
+          : undefined
+      }
+      deleteAction={(notification) => notificationApi.delete(notification.id)}
+      rowActions={[
+        {
+          label: "Details",
+          run: async (notification) => {
+            const result = await notificationApi.byId(notification.id);
+            showDetails("Notification details", result.data);
+          },
+        },
+        {
+          label: "Mark read",
+          run: (notification) => notificationApi.markAsRead(notification.id),
+          isVisible: (notification) => !notification.isRead,
+        },
+      ]}
+    />
+  );
+}
+
+export function PromotionRequestsView({ eyebrow = "Common workspace", title = "Instructor requests", admin = false }: { eyebrow?: string; title?: string; admin?: boolean }) {
+  return (
+    <DashboardResourcePage
+      eyebrow={eyebrow}
+      title={title}
+      description="Submit and review instructor promotion requests."
+      query={() => promotionRequestApi.list({ limit: 100 })}
+      columns={promotionRequestColumns}
+      getRowKey={(request) => request.id}
+      getSearchText={(request) => `${request.user?.name ?? ""} ${request.user?.email ?? ""} ${request.status} ${request.message ?? ""}`}
+      createAction={
+        admin
+          ? undefined
+          : {
+              label: "Request instructor role",
+              submitLabel: "Submit request",
+              fields: promotionRequestCreateFields,
+              mutation: (payload) => promotionRequestApi.create(payload as Parameters<typeof promotionRequestApi.create>[0]),
+            }
+      }
+      rowActions={[
+        {
+          label: "Details",
+          run: async (request) => {
+            const result = await promotionRequestApi.byId(request.id);
+            showDetails("Promotion request details", result.data);
+          },
+        },
+        ...(admin
+          ? [
+              {
+                label: "Approve",
+                run: (request: PromotionRequest) => {
+                  const adminFeedback = window.prompt("Admin feedback", "Approved. You can now create courses.");
+                  return promotionRequestApi.review(request.id, {
+                    status: "APPROVED",
+                    ...(adminFeedback ? { adminFeedback } : {}),
+                  });
+                },
+                isVisible: (request: PromotionRequest) => request.status === "PENDING",
+              },
+              {
+                label: "Reject",
+                variant: "danger" as const,
+                run: (request: PromotionRequest) => {
+                  const adminFeedback = window.prompt("Rejection feedback");
+                  return promotionRequestApi.review(request.id, {
+                    status: "REJECTED",
+                    ...(adminFeedback ? { adminFeedback } : {}),
+                  });
+                },
+                isVisible: (request: PromotionRequest) => request.status === "PENDING",
+              },
+            ]
+          : []),
       ]}
     />
   );

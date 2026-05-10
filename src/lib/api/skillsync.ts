@@ -34,6 +34,15 @@ export type SubmissionStatus =
   | "REJECTED";
 export type TicketPriority = "LOW" | "MEDIUM" | "HIGH";
 export type TicketStatus = "OPEN" | "IN_PROGRESS" | "RESOLVED" | "CLOSED";
+export type NotificationType =
+  | "ENROLLMENT"
+  | "ASSIGNMENT"
+  | "SUBMISSION"
+  | "REVIEW"
+  | "SUPPORT"
+  | "AI"
+  | "SYSTEM";
+export type PromotionRequestStatus = "PENDING" | "APPROVED" | "REJECTED";
 export type AiLevel = "beginner" | "intermediate" | "advanced";
 
 export type AuthUser = {
@@ -229,6 +238,30 @@ export type SupportMessage = {
   sender?: AuthUser;
 };
 
+export type Notification = {
+  id: string;
+  userId: string;
+  title: string;
+  message: string;
+  type: NotificationType;
+  isRead: boolean;
+  createdAt: string;
+};
+
+export type PromotionRequest = {
+  id: string;
+  userId: string;
+  status: PromotionRequestStatus;
+  message?: string | null;
+  adminFeedback?: string | null;
+  reviewedById?: string | null;
+  reviewedAt?: string | null;
+  createdAt: string;
+  updatedAt: string;
+  user?: Pick<AuthUser, "id" | "name" | "email" | "avatarUrl" | "image" | "role">;
+  reviewedBy?: Pick<AuthUser, "id" | "name" | "email" | "avatarUrl" | "image" | "role"> | null;
+};
+
 export type AiRequestLog = {
   id: string;
   userId?: string | null;
@@ -262,6 +295,22 @@ export type SupportTicketPayload = {
   subject: string;
   message: string;
   priority?: TicketPriority;
+};
+
+export type CreateNotificationPayload = {
+  userId: string;
+  title: string;
+  message: string;
+  type: NotificationType;
+};
+
+export type CreatePromotionRequestPayload = {
+  message?: string;
+};
+
+export type ReviewPromotionRequestPayload = {
+  status: Extract<PromotionRequestStatus, "APPROVED" | "REJECTED">;
+  adminFeedback?: string;
 };
 
 export type RoadmapPayload = {
@@ -801,6 +850,47 @@ export const supportApi = {
     apiFetch<SupportMessage>(`/support/tickets/${id}/replies`, {
       method: "POST",
       body: jsonBody({ message }),
+    }),
+};
+
+export const notificationApi = {
+  create: (payload: CreateNotificationPayload) =>
+    apiFetch<Notification>("/notifications", {
+      method: "POST",
+      body: jsonBody(payload),
+    }),
+  list: (query?: ApiListQuery) =>
+    apiFetch<Notification[]>("/notifications", { query }),
+  byId: (id: string) => apiFetch<Notification>(`/notifications/${id}`),
+  unreadCount: () =>
+    apiFetch<{ unreadCount: number }>("/notifications/unread-count"),
+  markAsRead: (id: string) =>
+    apiFetch<Notification>(`/notifications/${id}/read`, {
+      method: "PATCH",
+    }),
+  markAllAsRead: () =>
+    apiFetch<Notification[]>("/notifications/read-all", {
+      method: "PATCH",
+    }),
+  delete: (id: string) =>
+    apiFetch<null>(`/notifications/${id}`, {
+      method: "DELETE",
+    }),
+};
+
+export const promotionRequestApi = {
+  create: (payload: CreatePromotionRequestPayload) =>
+    apiFetch<PromotionRequest>("/promotion-requests", {
+      method: "POST",
+      body: jsonBody(payload),
+    }),
+  list: (query?: ApiListQuery) =>
+    apiFetch<PromotionRequest[]>("/promotion-requests", { query }),
+  byId: (id: string) => apiFetch<PromotionRequest>(`/promotion-requests/${id}`),
+  review: (id: string, payload: ReviewPromotionRequestPayload) =>
+    apiFetch<PromotionRequest>(`/promotion-requests/${id}/review`, {
+      method: "PATCH",
+      body: jsonBody(payload),
     }),
 };
 

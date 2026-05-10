@@ -10,11 +10,13 @@ export const getCommonNavItems = (role: UserRole): NavSection[] => {
         { title: "Home", href: "/", icon: "Home" },
         { title: "Dashboard", href: defaultDashboard, icon: "LayoutDashboard" },
         { title: "My Profile", href: "/profile", icon: "User" },
+        { title: "Notifications", href: "/notifications", icon: "Bell" },
         { title: "Settings", href: "/settings", icon: "Settings" },
       ],
     },
     {
       title: "AI Workspace",
+      icon: "Sparkles",
       items: [
         { title: "Course Summary", href: "/course-summary", icon: "BookOpen" },
         { title: "Study Assistant", href: "/study-chat", icon: "MessageSquare" },
@@ -31,11 +33,15 @@ export const getCommonNavItems = (role: UserRole): NavSection[] => {
     },
     {
       title: "Learning Activity",
+      icon: "GraduationCap",
       items: [
         { title: "My Enrollments", href: "/my-enrollments", icon: "GraduationCap" },
         { title: "My Submissions", href: "/my-submissions", icon: "Send" },
         { title: "Course Reviews", href: "/course-reviews", icon: "MessageSquare" },
         { title: "Support Tickets", href: "/support-tickets", icon: "Ticket" },
+        ...(role === "STUDENT"
+          ? [{ title: "Instructor Request", href: "/promotion-requests", icon: "UserRoundPlus" }]
+          : []),
         { title: "Change Password", href: "/change-password", icon: "KeyRound" },
       ],
     },
@@ -45,6 +51,7 @@ export const getCommonNavItems = (role: UserRole): NavSection[] => {
 export const instructorNavItems: NavSection[] = [
   {
     title: "Instructor Workspace",
+    icon: "BookOpen",
     items: [
       { title: "My Courses", href: "/instructor/dashboard/my-courses", icon: "BookOpen" },
       { title: "Modules", href: "/instructor/dashboard/course-modules", icon: "ClipboardList" },
@@ -59,12 +66,15 @@ export const instructorNavItems: NavSection[] = [
 export const adminNavItems: NavSection[] = [
   {
     title: "User Management",
+    icon: "Users",
     items: [
       { title: "Users", href: "/admin/dashboard/users-management", icon: "Users" },
+      { title: "Instructor Requests", href: "/admin/dashboard/promotion-requests", icon: "UserRoundPlus" },
     ],
   },
   {
     title: "Platform Management",
+    icon: "LayoutDashboard",
     items: [
       { title: "Categories", href: "/admin/dashboard/category-management", icon: "ClipboardList" },
       { title: "Courses", href: "/admin/dashboard/courses-management", icon: "BookOpen" },
@@ -79,6 +89,7 @@ export const adminNavItems: NavSection[] = [
 export const memberNavItems: NavSection[] = [
   {
     title: "Student Workspace",
+    icon: "Compass",
     items: [
       { title: "Browse Courses", href: "/dashboard/browse-courses", icon: "Compass" },
       { title: "My Learning", href: "/dashboard/my-learning", icon: "GraduationCap" },

@@ -2,10 +2,12 @@
 
 import { Bell, ChevronDown, LayoutDashboard, LogOut, Menu, Search, User, UserRound } from "lucide-react";
 import Link from "next/link";
+import { useQuery } from "@tanstack/react-query";
 import { useState } from "react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { useLogout } from "@/features/auth/hooks/use-logout";
+import { notificationApi } from "@/lib/api/skillsync";
 import { useAuthStore } from "@/features/auth/store/auth-store";
 import { getDefaultDashboardRoute, type UserRole } from "@/lib/authUtils";
 
@@ -41,6 +43,11 @@ export function DashboardHeader({ onMenuClick, role }: DashboardHeaderProps) {
   const [profileOpen, setProfileOpen] = useState(false);
   const logoutMutation = useLogout();
   const user = useAuthStore((state) => state.user);
+  const unreadCount = useQuery({
+    queryKey: ["notifications", "unread-count"],
+    queryFn: async () => (await notificationApi.unreadCount()).data.unreadCount,
+    refetchInterval: 60_000,
+  });
   const label = roleLabels[role];
   const email = user?.email ?? readEmailFromToken();
   const dashboardHref = getDefaultDashboardRoute(role);
@@ -63,8 +70,20 @@ export function DashboardHeader({ onMenuClick, role }: DashboardHeaderProps) {
           </div>
         </div>
         <div className="flex items-center gap-2">
-          <Button aria-label="Notifications" size="icon" variant="outline">
+          <Button
+            aria-label="Notifications"
+            asChild
+            className="relative overflow-visible"
+            href="/notifications"
+            size="icon"
+            variant="outline"
+          >
             <Bell className="size-4" />
+            {unreadCount.data ? (
+              <span className="absolute -right-1 -top-1 grid min-h-5 min-w-5 place-items-center rounded-full bg-danger px-1 text-[10px] font-bold leading-none text-white ring-2 ring-background">
+                {unreadCount.data > 9 ? "9+" : unreadCount.data}
+              </span>
+            ) : null}
           </Button>
           <div className="relative">
             <button

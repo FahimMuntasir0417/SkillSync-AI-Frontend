@@ -6,5 +6,6 @@ export type NavItem = {
 
 export type NavSection = {
   title?: string;
+  icon?: string;
   items: NavItem[];
 };

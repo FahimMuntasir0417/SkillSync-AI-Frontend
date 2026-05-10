@@ -10,6 +10,7 @@ import {
   X,
 } from "lucide-react";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -22,6 +23,7 @@ import {
   normalizeUserRole,
   type UserRole,
 } from "@/lib/authUtils";
+import { cn } from "@/lib/utils";
 
 const mainRoutes = [
   { href: "/courses", label: "Course" },
@@ -83,6 +85,17 @@ function readStoredRole(): UserRole {
   return normalizeUserRole(readRoleFromToken(token) ?? storedRole);
 }
 
+function isActivePath(pathname: string, href: string) {
+  return pathname === href || pathname.startsWith(`${href}/`);
+}
+
+function hasActiveRoute(
+  pathname: string,
+  routes: { href: string; label: string }[],
+) {
+  return routes.some((route) => isActivePath(pathname, route.href));
+}
+
 const roleLabels: Record<UserRole, string> = {
   ADMIN: "Admin",
   INSTRUCTOR: "Instructor",
@@ -91,6 +104,7 @@ const roleLabels: Record<UserRole, string> = {
 };
 
 export function SiteHeader() {
+  const pathname = usePathname();
   const [open, setOpen] = useState(false);
   const [aiOpen, setAiOpen] = useState(false);
   const [exploreOpen, setExploreOpen] = useState(false);
@@ -125,6 +139,24 @@ export function SiteHeader() {
     closeMenus();
     logoutMutation.mutate();
   };
+  const aiActive = hasActiveRoute(pathname, aiRoutes);
+  const exploreActive = hasActiveRoute(pathname, exploreRoutes);
+  const dashboardActive = isActivePath(pathname, dashboardHref);
+  const navLinkClass = (active: boolean) =>
+    cn(
+      "rounded-card px-3 py-2 text-sm font-semibold text-muted-foreground transition hover:bg-muted hover:text-foreground",
+      active && "bg-primary/10 text-primary ring-1 ring-primary/20",
+    );
+  const mobileLinkClass = (active: boolean) =>
+    cn(
+      "rounded-card px-3 py-3 text-sm font-semibold hover:bg-muted",
+      active && "bg-primary/10 text-primary ring-1 ring-primary/20",
+    );
+  const dropdownLinkClass = (active: boolean) =>
+    cn(
+      "block rounded-card px-3 py-2 text-sm hover:bg-muted",
+      active && "bg-primary/10 font-semibold text-primary",
+    );
 
   return (
     <header className="sticky top-0 z-50 border-b border-border bg-background/80 backdrop-blur-xl">
@@ -139,7 +171,7 @@ export function SiteHeader() {
         <nav className="hidden items-center gap-1 lg:flex">
           {mainRoutes.map((route) => (
             <Link
-              className="rounded-card px-3 py-2 text-sm font-semibold text-muted-foreground transition hover:bg-muted hover:text-foreground"
+              className={navLinkClass(isActivePath(pathname, route.href))}
               href={route.href}
               key={route.href}
             >
@@ -148,7 +180,10 @@ export function SiteHeader() {
           ))}
           <div className="relative">
             <button
-              className="flex items-center gap-1 rounded-card px-3 py-2 text-sm font-semibold text-muted-foreground transition hover:bg-muted hover:text-foreground"
+              className={cn(
+                "flex items-center gap-1 rounded-card px-3 py-2 text-sm font-semibold text-muted-foreground transition hover:bg-muted hover:text-foreground",
+                aiActive && "bg-primary/10 text-primary ring-1 ring-primary/20",
+              )}
               onClick={() => {
                 setAiOpen((value) => !value);
                 setExploreOpen(false);
@@ -162,7 +197,7 @@ export function SiteHeader() {
               <div className="card absolute left-0 mt-2 w-56 overflow-hidden p-2">
                 {aiRoutes.map((route) => (
                   <Link
-                    className="block rounded-card px-3 py-2 text-sm hover:bg-muted"
+                    className={dropdownLinkClass(isActivePath(pathname, route.href))}
                     href={route.href}
                     key={route.href}
                     onClick={() => setAiOpen(false)}
@@ -175,7 +210,10 @@ export function SiteHeader() {
           </div>
           <div className="relative">
             <button
-              className="flex items-center gap-1 rounded-card px-3 py-2 text-sm font-semibold text-muted-foreground transition hover:bg-muted hover:text-foreground"
+              className={cn(
+                "flex items-center gap-1 rounded-card px-3 py-2 text-sm font-semibold text-muted-foreground transition hover:bg-muted hover:text-foreground",
+                exploreActive && "bg-primary/10 text-primary ring-1 ring-primary/20",
+              )}
               onClick={() => {
                 setExploreOpen((value) => !value);
                 setAiOpen(false);
@@ -189,7 +227,7 @@ export function SiteHeader() {
               <div className="card absolute left-0 mt-2 w-48 overflow-hidden p-2">
                 {exploreRoutes.map((route) => (
                   <Link
-                    className="block rounded-card px-3 py-2 text-sm hover:bg-muted"
+                    className={dropdownLinkClass(isActivePath(pathname, route.href))}
                     href={route.href}
                     key={route.href}
                     onClick={() => setExploreOpen(false)}
@@ -201,7 +239,7 @@ export function SiteHeader() {
             ) : null}
           </div>
           <Link
-            className="rounded-card px-3 py-2 text-sm font-semibold text-muted-foreground transition hover:bg-muted hover:text-foreground"
+            className={navLinkClass(dashboardActive)}
             href={dashboardHref}
           >
             Dashboard
@@ -296,7 +334,7 @@ export function SiteHeader() {
           <nav className="container-shell grid gap-2 py-4">
             {mainRoutes.map((route) => (
               <Link
-                className="rounded-card px-3 py-3 text-sm font-semibold hover:bg-muted"
+                className={mobileLinkClass(isActivePath(pathname, route.href))}
                 href={route.href}
                 key={route.href}
                 onClick={() => setOpen(false)}
@@ -310,7 +348,11 @@ export function SiteHeader() {
               </p>
               {aiRoutes.map((route) => (
                 <Link
-                  className="rounded-card px-3 py-2 text-sm font-semibold hover:bg-muted"
+                  className={cn(
+                    "rounded-card px-3 py-2 text-sm font-semibold hover:bg-muted",
+                    isActivePath(pathname, route.href) &&
+                      "bg-primary/10 text-primary ring-1 ring-primary/20",
+                  )}
                   href={route.href}
                   key={route.href}
                   onClick={() => setOpen(false)}
@@ -325,7 +367,11 @@ export function SiteHeader() {
               </p>
               {exploreRoutes.map((route) => (
                 <Link
-                  className="rounded-card px-3 py-2 text-sm font-semibold hover:bg-muted"
+                  className={cn(
+                    "rounded-card px-3 py-2 text-sm font-semibold hover:bg-muted",
+                    isActivePath(pathname, route.href) &&
+                      "bg-primary/10 text-primary ring-1 ring-primary/20",
+                  )}
                   href={route.href}
                   key={route.href}
                   onClick={() => setOpen(false)}
@@ -335,7 +381,7 @@ export function SiteHeader() {
               ))}
             </div>
             <Link
-              className="rounded-card px-3 py-3 text-sm font-semibold hover:bg-muted"
+              className={mobileLinkClass(dashboardActive)}
               href={dashboardHref}
               onClick={() => setOpen(false)}
             >

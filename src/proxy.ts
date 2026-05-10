@@ -23,6 +23,8 @@ const PROTECTED_PREFIXES = [
   "/my-submissions",
   "/saved-courses",
   "/support-tickets",
+  "/notifications",
+  "/promotion-requests",
   "/change-password",
 ];
 

@@ -2,6 +2,7 @@ import { ArrowLeft, BookOpen, CheckCircle2, Clock, Star, Users } from "lucide-re
 import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import { EnrollCourseButton } from "@/components/courses/enroll-course-button";
 import { CourseCard } from "@/components/courses/course-card";
 import { Button } from "@/components/ui/button";
 import { SectionHeading } from "@/components/ui/section-heading";
@@ -47,9 +48,7 @@ export default async function CourseDetailsPage({ params }: CourseDetailsPagePro
               <Info icon={Users} label={`${course.totalEnrollments} enrolled`} />
             </div>
             <div className="mt-8 flex flex-col gap-3 sm:flex-row">
-              <Button asChild href="/login" size="lg">
-                Enroll now
-              </Button>
+              <EnrollCourseButton courseId={course.id} />
               <Button asChild href="/support" size="lg" variant="outline">
                 Ask support
               </Button>
