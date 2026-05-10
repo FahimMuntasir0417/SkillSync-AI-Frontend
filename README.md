@@ -175,8 +175,8 @@ bun run start
 Create a `.env` file in the project root. Do not commit real secrets.
 
 ```env
-NEXT_PUBLIC_API_BASE_URL=https://skill-sync-ai-backend.vercel.app/api/v1
-NEXT_PUBLIC_APP_URL=https://skill-sync-ai-frontend.vercel.app
+NEXT_PUBLIC_API_BASE_URL=your_backend_base_url
+NEXT_PUBLIC_APP_URL=your_clint_ url
 ```
 
 `NEXT_PUBLIC_API_BASE_URL` should point to the SkillSync AI backend API base URL.
@@ -317,3 +317,30 @@ SkillSync AI Frontend/
 - WhatsApp: 01571042536
 - Facebook: https://www.facebook.com/mohammad.fahim.muntasir
 - LinkedIn: https://www.linkedin.com/in/md-fahim-muntasir-aa536b366/
+
+Live Frontend URL:https://skill-sync-ai-frontend.vercel.app/
+Live Backend URL:https://skill-sync-ai-backend.vercel.app/
+
+Frontend GitHub Repository:https://github.com/FahimMuntasir0417/SkillSync-AI-Frontend
+Backend GitHub Repository:https://github.com/FahimMuntasir0417/SkillSync-AI-Backend
+
+Demo Video: https://drive.google.com/file/d/1emZQGxEL78LvL4-J-XpppBt8SJ6slVTa/view?usp=sharing
+
+Student Email: student@skillsync.ai
+Student Password: Student@123
+
+Admin Email: admin@skillsync.ai
+Admin Password: Admin@123
+
+Instructor Email: instructor@skillsync.ai
+Instructor Password: Instructor@123
+
+AI Features Explanation::
+Roadmap Generator: Creates a personalized step-by-step learning roadmap based on the user’s goal, level, skills, and timeline.
+Course Summary: Generates a short AI summary so users can quickly understand a course before studying.
+Smart Recommendations: Suggests relevant learning paths, courses, or skills based on the user’s interest.
+Career Chat Assistant: Acts like an AI mentor for career guidance, learning advice, and next-step planning.
+Skill Gap Analyzer: Compares current skills with a target role and identifies missing skills.
+Project Recommender: Suggests portfolio project ideas based on the user’s role, level, and technologies.
+Assignment Feedback: Provides AI-generated feedback to help students improve submitted work.
+Blog Generator: Creates educational blog drafts for instructors or admins.
