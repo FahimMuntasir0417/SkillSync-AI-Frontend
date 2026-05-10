@@ -31,7 +31,7 @@ const mainRoutes = [
 ];
 
 const aiRoutes = [
-  { href: "/ai", label: "Roadmap Generator" },
+  { href: "/roadmap-generator", label: "Roadmap Generator" },
   { href: "/course-summary", label: "Course Summary" },
   { href: "/recommendations", label: "Recommendations" },
   { href: "/career-chat", label: "Career Chat" },

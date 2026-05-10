@@ -3,6 +3,7 @@ import { getDefaultDashboardRoute, type UserRole } from "./authUtils";
 
 export const getCommonNavItems = (role: UserRole): NavSection[] => {
   const defaultDashboard = getDefaultDashboardRoute(role);
+  const dashboardToolHref = (href: string) => `${defaultDashboard}${href}`;
 
   return [
     {
@@ -18,14 +19,14 @@ export const getCommonNavItems = (role: UserRole): NavSection[] => {
       title: "AI Workspace",
       icon: "Sparkles",
       items: [
-        { title: "Course Summary", href: "/course-summary", icon: "BookOpen" },
+        { title: "Course Summary", href: dashboardToolHref("/course-summary"), icon: "BookOpen" },
         { title: "Study Assistant", href: "/study-chat", icon: "MessageSquare" },
-        { title: "Recommendations", href: "/recommendations", icon: "WandSparkles" },
-        { title: "Roadmap Generator", href: "/roadmap-generator", icon: "Route" },
+        { title: "Recommendations", href: dashboardToolHref("/recommendations"), icon: "WandSparkles" },
+        { title: "Roadmap Generator", href: dashboardToolHref("/roadmap-generator"), icon: "Route" },
         { title: "Skill Gap Analyzer", href: "/skill-gap-analyzer", icon: "Target" },
         { title: "Project Recommender", href: "/project-recommender", icon: "WandSparkles" },
         { title: "AI Chat Assistant", href: "/ai-chat", icon: "Bot" },
-        { title: "Career Chat", href: "/career-chat", icon: "Bot" },
+        { title: "Career Chat", href: dashboardToolHref("/career-chat"), icon: "Bot" },
         { title: "Assignment Feedback", href: "/assignment-feedback", icon: "ClipboardList" },
         { title: "Blog Generator", href: "/blog-generator", icon: "Newspaper" },
         { title: "Saved Roadmaps", href: "/saved-roadmaps", icon: "FolderClock" },

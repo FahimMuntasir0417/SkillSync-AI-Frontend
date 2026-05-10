@@ -5,7 +5,7 @@ import { PageHeader } from "@/components/ui/page-header";
 
 const tools = [
   {
-    href: "/course-summary",
+    href: "/dashboard/course-summary",
     title: "Course Summary",
     description: "Summarize a course by ID with the backend AI summary endpoint.",
     icon: BookOpen,
@@ -17,13 +17,13 @@ const tools = [
     icon: MessageSquareText,
   },
   {
-    href: "/recommendations",
+    href: "/dashboard/recommendations",
     title: "Recommendations",
     description: "Get general learning recommendations from an optional interest.",
     icon: WandSparkles,
   },
   {
-    href: "/roadmap-generator",
+    href: "/dashboard/roadmap-generator",
     title: "Roadmap Generator",
     description: "Create a phased learning plan from your target role, level, and weekly hours.",
     icon: Route,
@@ -47,7 +47,7 @@ const tools = [
     icon: MessageSquareText,
   },
   {
-    href: "/career-chat",
+    href: "/dashboard/career-chat",
     title: "Career Chat",
     description: "Ask career questions with goal, level, and current skills context.",
     icon: Bot,

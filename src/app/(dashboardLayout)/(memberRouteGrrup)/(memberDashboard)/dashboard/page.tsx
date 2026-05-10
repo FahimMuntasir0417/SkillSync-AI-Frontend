@@ -21,7 +21,7 @@ const stats = [
 ];
 
 const quickActions = [
-  { href: "/roadmap-generator", label: "Generate Roadmap", description: "Create a phased learning plan", icon: Route },
+  { href: "/dashboard/roadmap-generator", label: "Generate Roadmap", description: "Create a phased learning plan", icon: Route },
   { href: "/skill-gap-analyzer", label: "Analyze Skill Gap", description: "Find your next priority skills", icon: Target },
   { href: "/project-recommender", label: "Get Project Ideas", description: "Build the right portfolio work", icon: WandSparkles },
   { href: "/ai-chat", label: "Ask AI Assistant", description: "Get learning support instantly", icon: MessageSquareText },
@@ -35,7 +35,7 @@ export default function DashboardPage() {
         title="Welcome back to SkillSync AI"
         description="Your AI learning workspace is ready. Generate a roadmap, analyze gaps, or choose the next project to build."
         actions={
-          <Button asChild href="/roadmap-generator">
+          <Button asChild href="/dashboard/roadmap-generator">
             <Route className="size-4" />
             Generate Roadmap
           </Button>

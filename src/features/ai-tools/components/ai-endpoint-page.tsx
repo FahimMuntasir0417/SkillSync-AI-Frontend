@@ -2,6 +2,7 @@
 
 import type { LucideIcon } from "lucide-react";
 import { AlertTriangle, CheckCircle2, Loader2, Sparkles } from "lucide-react";
+import { usePathname } from "next/navigation";
 import { useMemo, useState } from "react";
 import { toast } from "sonner";
 import { Badge } from "@/components/ui/badge";
@@ -11,6 +12,7 @@ import { EmptyState, ErrorState } from "@/components/ui/empty-state";
 import { Input } from "@/components/ui/input";
 import { PageHeader } from "@/components/ui/page-header";
 import { Textarea } from "@/components/ui/textarea";
+import { cn } from "@/lib/utils";
 
 export type AiToolField = {
   name: string;
@@ -96,10 +98,12 @@ export function AiEndpointPage<TPayload>({
   transformResult,
   title,
 }: AiEndpointPageProps<TPayload>) {
+  const pathname = usePathname();
   const [values, setValues] = useState(defaultValues);
   const [result, setResult] = useState<unknown>(null);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+  const dashboardLayout = /^\/(dashboard|admin\/dashboard|instructor\/dashboard)(\/|$)/.test(pathname);
 
   const missingRequired = useMemo(
     () => fields.filter((field) => field.required && !values[field.name]?.trim()).map((field) => field.label),
@@ -136,9 +140,9 @@ export function AiEndpointPage<TPayload>({
   };
 
   return (
-    <main className="grid gap-6 p-4 md:p-8">
+    <main className={cn("grid gap-6", dashboardLayout ? "p-4 md:p-8" : "container-shell py-10 md:py-12")}>
       <PageHeader eyebrow="AI tools" title={title} description={description} />
-      <div className="grid gap-6 xl:grid-cols-[0.85fr_1.15fr]">
+      <div className="grid items-start gap-6 xl:grid-cols-[0.85fr_1.15fr]">
         <Card>
           <CardHeader>
             <div className="flex items-start gap-3">
@@ -201,12 +205,12 @@ export function AiEndpointPage<TPayload>({
         </Card>
 
         {loading ? (
-          <Card className="grid min-h-80 place-items-center text-center">
+          <Card className="grid min-h-64 place-items-center text-center">
             <Loader2 className="size-8 animate-spin text-primary" />
             <p className="mt-3 text-sm font-semibold text-muted-foreground">Generating AI response...</p>
           </Card>
         ) : error ? (
-          <ErrorState title={`${title} failed`} description={error} />
+          <ErrorState className="min-h-64" title={`${title} failed`} description={error} />
         ) : result ? (
           <Card>
             <CardHeader>
@@ -224,7 +228,7 @@ export function AiEndpointPage<TPayload>({
             <ResultValue value={result} />
           </Card>
         ) : (
-          <EmptyState title="No response yet" description="Submit the form to call this AI endpoint." />
+          <EmptyState className="min-h-64" title="No response yet" description="Submit the form to call this AI endpoint." />
         )}
       </div>
     </main>
