@@ -9,6 +9,17 @@ export const metadata: Metadata = {
     "AI-powered learning platform for career roadmaps, skill analysis, project recommendations, and AI learning assistance.",
 };
 
+const themeInitScript = `
+(() => {
+  try {
+    const theme = window.localStorage.getItem("theme");
+    document.documentElement.classList.toggle("dark", theme === "dark");
+  } catch {
+    document.documentElement.classList.remove("dark");
+  }
+})();
+`;
+
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -16,6 +27,9 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning>
+      <head>
+        <script dangerouslySetInnerHTML={{ __html: themeInitScript }} />
+      </head>
       <body suppressHydrationWarning>
         <QueryProvider>{children}</QueryProvider>
         <Toaster richColors position="top-right" />
